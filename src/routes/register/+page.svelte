@@ -81,7 +81,7 @@
                     name="_R_0_"
                     value="loggingLeseoperasjoner"
             />
-            <label for="quiet" class="ds-label" data-weight="regular">Overfør manuelt logger fra 2026 eldre enn 29 dager rett til arkivet, ikke til GAAL</label>
+            <label for="quiet" class="ds-label" data-weight="regular">Overfør manuelt logger fra 2026 eldre enn 29 dager rett til arkivet (cold) ved , ikke til GAAL</label>
         </ds-field>
     </fieldset>
 
