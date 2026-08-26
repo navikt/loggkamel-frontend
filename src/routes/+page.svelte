@@ -1,8 +1,8 @@
 <script lang="ts">
     import type { PageProps } from './$types';
-    import type { Example } from '$lib/types';
+
     let { data }: PageProps = $props();
-    let { examplesArray } = data; /* TODO: Fix, reference it inside a closure instead */
+    const examplesArray = $derived(data.examplesArray);
 </script>
 
 <div class="container">
@@ -10,7 +10,10 @@
     <!--<p>Length {examplesArray.length}</p>-->
 
     {#if examplesArray.length === 0}
-        <p>Ingen databaser registrert på mine naisteam (eller ingen naisteam). <a href="/register" class="ds-link">Registrer database</a> eller se <a href="/all-tasks" class="ds-link">alle registrerte databaser</a>.</p>
+        <p>Ingen databaser registrert på mine naisteam (eller ingen naisteam).
+            <a href="/register" class="ds-link">Registrer database</a> eller se
+            <a href="/all-tasks" class="ds-link">alle registrerte databaser</a>.
+        </p>
     {:else}
         <table class="ds-table">
             <caption>Databaser registrert på mine naisteam</caption>
@@ -81,5 +84,3 @@
         Tasks slettet eller registrert uten tasks (så loggkamel kan ignorere loggene).
     </p>
 </div>
-
-<!--<pre>{JSON.stringify(data, null, 2)}</pre>-->
