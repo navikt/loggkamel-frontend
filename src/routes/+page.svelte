@@ -2,14 +2,13 @@
     import type { PageProps } from './$types';
 
     let { data }: PageProps = $props();
-    const examplesArray = $derived(data.examplesArray);
+    const teamTasks = $derived(data.teamTasks);
 </script>
 
 <div class="container">
     <h1 class="ds-heading" data-size="xl" style="margin-bottom:var(--ds-size-5);">Logg-overføring til GCP</h1>
-    <!--<p>Length {examplesArray.length}</p>-->
 
-    {#if examplesArray.length === 0}
+    {#if teamTasks.length === 0}
         <p>Ingen databaser registrert på mine naisteam (eller ingen naisteam).
             <a href="/register" class="ds-link">Registrer database</a> eller se
             <a href="/all-tasks" class="ds-link">alle registrerte databaser</a>.
@@ -33,11 +32,11 @@
             </tr>
             </thead>
             <tbody>
-            {#each examplesArray as row (row.name)}
+            {#each teamTasks as row (row.dbname)}
                 <tr>
-                    <td>{row.id}</td>
-                    <td>{row.name}</td>
-                    <td>{row.username}</td>
+                    <td>{row.naisteam}</td>
+                    <td>{row.teknologi}</td>
+                    <td>{row.dbname}</td>
                     <!--<td style="display: flex; gap: var(--ds-size-2);">
                         {#if tagKeys.every((key) => row[key] === 'False')}
                         <span
@@ -53,6 +52,7 @@
                             {/each}
                         {/if}
                     </td>-->
+                    <!-- TODO: endre dbms+dbname -->
                     <td style="text-align: right;">
                         <a
                                 class="ds-link"
