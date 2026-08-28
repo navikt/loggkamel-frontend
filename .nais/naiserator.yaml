@@ -1,0 +1,68 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: loggkamel-frontend
+  namespace: sikkerhetstjenesten
+  labels:
+    team: sikkerhetstjenesten
+spec:
+  azure:
+    application:
+      enabled: true
+      allowAllUsers: true
+    sidecar:
+      enabled: true
+      autoLogin: true
+  ingresses:
+    {{#each ingresses as |ingress|}}
+       - {{ingress}}
+      {{/each}}
+  image: {{image}}
+  observability:
+    logging:
+      destinations:
+        - id: loki
+        #- id: elastic
+    autoInstrumentation:
+      enabled: true
+      runtime: nodejs
+  port: 8080
+  readiness:
+    path: /health
+    initialDelay: 60
+  liveness:
+    path: /health
+    initialDelay: 60
+  replicas:
+    max: {{replica.max}}
+    min: {{replica.min}}
+  resources:
+    limits:
+      memory: '{{mem.max}}'
+    requests:
+      cpu: '{{cpu.min}}'
+      memory: '{{mem.min}}'
+  #terminationGracePeriodSeconds: 120
+  accessPolicy:
+    outbound:
+      rules:
+        - application: logging
+          namespace: nais-system
+        - application: loggkamel
+          namespace: sikkerhetstjenesten
+      external:
+        {{#each outbound as |outbound|}}
+           - host: '{{outbound}}'
+                     {{/each }}
+    inbound:
+      rules:
+        - application: loggkamel
+          namespace: sikkerhetstjenesten
+        {{#each inbound as |app|}}
+           - application: '{{app.name}}'
+               namespace: '{{app.namespace}}'
+               cluster: '{{app.cluster}}'
+               {{/each }}
+  env:
+    - name: NAIS_CLUSTER_TYPE
+      value: {{nais.cluster.type}}
