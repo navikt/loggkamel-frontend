@@ -1,42 +1,41 @@
-# sv
+# Loggkamel frontend
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Frontend for å registrere, se og endre overførings-tasks for loggkamel. 
+Loggkamel overfører SQL-logger fra on-prem databaser til Nais' lagringsløsning og [Gjennomgang av auditlogger (GAAL)](https://audit-approval.iap.nav.cloud.nais.io/).
 
-## Creating a project
+Kontakt oss på Slack
+* [#team-sikkerhetstjenesten](https://nav-it.slack.com/archives/C09KKNS0RJS) for alt angående loggkamel og frontenden
+* [nais-database-auditlogging](https://nav-it.slack.com/archives/C0A29KP884T) for Nais' lagringsløsning og [GAAL](https://audit-approval.iap.nav.cloud.nais.io/)
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Tech stack
+* [SvelteKit](https://kit.svelte.dev/)
+* [Designsystemet.no](https://designsystemet.no/)
+* Typescript
+
+## Kjøre lokalt
+
+Anbefaler pnpm og `pnpm config --global set minimumReleaseAge 4320`, se [Navs security playbook](https://sikkerhet.nav.no/docs/sikker-utvikling/supply-chain/#npm--nodejs).
+
+Install dependencies with `pnpm install` (or `npm install` or `yarn`). Then start development server:
+
+```sh
+pnpm run dev
+
+# or start the server and open the app in a new browser tab
+pnpm run dev --open
+```
+
+To create a production version of your app:
+
+```sh
+pnpm run build
+```
+
+You can preview the production build with `pnpm run preview`.
+
+New project with SvelteKit:
 
 ```sh
 # create a new project
 npx sv create my-app
 ```
-
-To recreate this project with the same configuration:
-
-```sh
-# recreate this project
-pnpm dlx sv@0.17.0 create --template minimal --types ts --add prettier vitest="usages:unit,component" playwright --install pnpm loggkamel-frontend
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
