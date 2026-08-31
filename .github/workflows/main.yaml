@@ -22,6 +22,8 @@ jobs:
         if: steps.changed-files.outputs.changed != 'only-inputs'
         uses: nais/docker-build-push@v0
         id: docker-build-push
+        with:
+          team: sikkerhetstjenesten
       - name: Deploy to Nais
         uses: nais/deploy/actions/deploy@v2
         env:
