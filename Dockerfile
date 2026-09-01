@@ -1,7 +1,5 @@
 ARG NODE_VERSION="26"
 FROM node:${NODE_VERSION} AS node-with-deps
-RUN corepack enable && corepack prepare pnpm@11.22.0 --activate
-WORKDIR /usr/app
 
 COPY package.json .npmrc ./
 
@@ -12,16 +10,13 @@ COPY . ./
 RUN pnpm run build
 
 FROM node:${NODE_VERSION}-alpine AS prod-deps
-RUN corepack enable && corepack prepare pnpm@11.22.0 --activate
-WORKDIR /usr/app
 
-COPY --from=node-with-deps /usr/app/package.json /usr/app/.npmrc ./
+#COPY --from=node-with-deps /usr/app/package.json /usr/app/.npmrc ./
 RUN pnpm install --prod
 
 FROM node:${NODE_VERSION}-alpine
-RUN apk upgrade --no-cache && \
-	rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
-WORKDIR /usr/app
+RUN apk upgrade --no-cache
+#WORKDIR /usr/app
 
 ENV NODE_ENV=production
 ENV GRAPHQL_ENDPOINT=http://nais-api/graphql
