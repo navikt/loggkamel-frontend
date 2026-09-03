@@ -18,17 +18,25 @@ jobs:
     name: Build, push and deploy to ${{ matrix.cluster }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0  # fetch all history for what-changed action
+      - name: Determine what to do
+        id: changed-files
+        uses: "nais/what-changed@main" # TODO pin
+        with:
+          files: .nais/app.yaml, .nais/${{ matrix.cluster }}.json #, topic.yaml, etc.
       - name: Build and push image and SBOM to OCI registry
         if: steps.changed-files.outputs.changed != 'only-inputs'
-        uses: nais/docker-build-push@v0
+        uses: nais/docker-build-push@v0 # TODO pin
         id: docker-build-push
         with:
           team: sikkerhetstjenesten
-      - name: Deploy to Nais
-        uses: nais/deploy/actions/deploy@v2
-        env:
-          PRINT_PAYLOAD: true
-          RESOURCE: .nais/naiserator.yaml
-          CLUSTER: ${{ matrix.cluster }}
-          VARS: .nais/${{ matrix.cluster }}.json
-          WORKLOAD_IMAGE: ${{ steps.docker-build-push.outputs.image }}
+
+    - name: Deploy to Nais
+      uses: nais/deploy/actions/deploy@v2 # TODO pin
+      envs:
+        PRINT_PAYLOAD: true
+        RESOURCE: .nais/naiserator.yaml
+        CLUSTER: ${{ matrix.cluster }}
+        VARS: .nais/${{ matrix.cluster }}.json
+        WORKLOAD_IMAGE: ${{ steps.docker-build-push.outputs.image }}
