@@ -1,11 +1,12 @@
-FROM gcr.io/distroless/nodejs26-debian13:nonroot
+FROM europe-north1-docker.pkg.dev/cgr-nav/pull-through/nav.no/node:22-slim
+
+ENV NODE_ENV production
+ENV NPM_CONFIG_CACHE /tmp
 
 WORKDIR /app
 
-COPY package.json /app/
+COPY dist dist/
+COPY server server/
 
-ENV NODE_ENV=production
-
-EXPOSE 3000
-
-CMD ["server.js"]
+EXPOSE 8080
+CMD ["server/dist/index.js"]
