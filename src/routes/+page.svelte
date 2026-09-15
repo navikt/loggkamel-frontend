@@ -37,22 +37,25 @@
                     <td>{row.naisteam}</td>
                     <td>{row.teknologi}</td>
                     <td>{row.dbname}</td>
-                    <!--<td style="display: flex; gap: var(--ds-size-2);">
-                        {#if tagKeys.every((key) => row[key] === 'False')}
-                        <span
-                                class="ds-tag"
-                                data-variant="default"
-                                data-color="neutral"
-                        >Ingen</span>
-                        {:else}
-                            {#each tagEntries as [key, value] (key)}
-                                {#if row[key] === 'True'}
-                                    <span class="ds-tag">{value}</span>
-                                {/if}
-                            {/each}
+                    <!-- TODO: find out whether to add arkivlov & if so, add to loggkamel-db too -->
+                    <td>
+                        {#if row.okonomi}
+                            <span class="ds-tag">Økonomi</span>
                         {/if}
-                    </td>-->
-                    <!-- TODO: endre dbms+dbname -->
+
+                        {#if row.endringerUtenKrav && !row.okonomi}
+                            <span class="ds-tag">endringer</span>
+                        {/if}
+
+                        {#if row.loggingLeseoperasjoner}
+                            <span class="ds-tag" data-color="success">read</span>
+                        {/if}
+
+                        {#if !row.okonomi && !row.endringerUtenKrav && !row.loggingLeseoperasjoner}
+                            <span class="ds-tag">ingen</span>
+                        {/if}
+                    </td>
+                    <!-- TODO: link unique for dbms+dbname -->
                     <td style="text-align: right;">
                         <a
                                 class="ds-link"
@@ -77,7 +80,10 @@
     <p> <span class="ds-tag" style="margin-right: 0.5rem;">Arkivlov</span>
         Databasen skal forvaltes som arkiv (iht. arkivforskrifta § 5), endringslogger overføres (DML, DCL og DDL). Lagres i 11 år.
     </p>
-    <p> <span class="ds-tag" style="margin-right: 0.5rem;">read</span>
+    <p> <span class="ds-tag" style="margin-right: 0.5rem;">endringer</span>
+        Endringslogger (DML, DCL og DDL) overføres for databasen, uten at det foreligger lovkrav. Lagres i 11 år.
+    </p>
+    <p> <span class="ds-tag" data-color="success" style="margin-right: 0.5rem;">read</span>
         SELECT-logger overføres til naisteamets Default log bucket (standard-lagringstid på 30 dager), og videresendes ikke av Nais.
     </p>
     <p> <span class="ds-tag" data-variant="default" data-color="neutral" style="margin-right: 0.5rem;">Ingen</span>
