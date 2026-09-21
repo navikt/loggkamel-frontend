@@ -13,3 +13,8 @@ export interface TeamTask {
 	funnetLogger: boolean;
 	discardLogs: boolean;
 }
+
+export interface TeamsWithTasks {
+	naisteam: string;
+	tasksForTeam: TeamTask[];
+}

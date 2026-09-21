@@ -79,9 +79,9 @@
                     class="ds-input"
                     type="checkbox"
                     name="_R_0_"
-                    value="loggingLeseoperasjoner"
+                    value="quiet"
             />
-            <label for="quiet" class="ds-label" data-weight="regular">Overfør manuelt logger fra 2026 eldre enn 29 dager rett til arkivet (cold) ved oppretting, ikke til GAAL</label>
+            <label for="quiet" class="ds-label" data-weight="regular">Overfør manuelt logger fra 2026 eldre enn 29 dager rett til arkivet ved oppretting, ikke til GAAL</label>
         </ds-field>
     </fieldset>
 

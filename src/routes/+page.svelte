@@ -52,7 +52,7 @@
                         {/if}
 
                         {#if !row.okonomi && !row.endringerUtenKrav && !row.loggingLeseoperasjoner}
-                            <span class="ds-tag">ingen</span>
+                            <span class="ds-tag" data-variant="default" data-color="neutral">ingen</span>
                         {/if}
                     </td>
                     <!-- TODO: link unique for dbms+dbname -->
@@ -60,7 +60,7 @@
                         <a
                                 class="ds-link"
                                 id="row-link"
-                                href="/endre"
+                                href="/update/{row.teknologi}-{row.dbname}"
                                 target="_blank"
                                 rel="noopener noreferrer"
                         >Endre</a>
@@ -75,7 +75,7 @@
         Forklaring av overførings-tasks
     </h2>
     <p> <span class="ds-tag" style="margin-right: 0.5rem;">Økonomi</span>
-        Databasen er et økonomi- eller hjelpesystem, endringslogger overføres (DML, DCL og DDL, ). Lagres i 11 år.
+        Databasen er et økonomi- eller hjelpesystem, endringslogger overføres (DML, DCL og DDL). Lagres i 11 år.
     </p>
     <p> <span class="ds-tag" style="margin-right: 0.5rem;">Arkivlov</span>
         Databasen skal forvaltes som arkiv (iht. arkivforskrifta § 5), endringslogger overføres (DML, DCL og DDL). Lagres i 11 år.

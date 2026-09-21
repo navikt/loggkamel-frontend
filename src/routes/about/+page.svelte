@@ -25,6 +25,9 @@
         <li><a href="https://etterlevelse.ansatt.nav.no/krav/9466324b-8270-4a76-bd49-f79e86e3b490">
             Etterlevelseskrav K125 (tilgangsstyring og auditlogging av økonomisystemer)</a>
         </li>
+        <li><a href="https://audit-approval.iap.nav.cloud.nais.io/dokumentasjon/ofte-stilte-sporsmal">
+            GAAL: Ofte stilte spørsmål</a>
+        </li>
         <li><a href="https://navno.sharepoint.com/sites/enhet-it-avdelingen/SitePages/Etterlevelse-av-økonomireglementet-i-digital-utvikling.aspx">
             Krav til økonomisystemer i Nav (Navet)</a>
         </li>

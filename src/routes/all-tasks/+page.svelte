@@ -1,4 +1,8 @@
-<script>
+<script lang="ts">
+    import type { PageProps } from './$types';
+
+    let { data }: PageProps = $props();
+    const teamsWithTasks = $derived(data.teamsWithTasks);
 </script>
 
 <div class="container">
@@ -27,5 +31,32 @@
         <button class="ds-button" type="button">Filtrer</button> <!-- Maybe drop -->
     </div>
 
-    <!-- TODO: Use ds-details to list all nais teams with any registered tasks, that expands to table with all the  tasks -->
+    <div>
+        {#each teamsWithTasks as naisTeam (naisTeam.naisteam)}
+            <details class="ds-details">
+                <summary>{naisTeam.naisteam} ({naisTeam.tasksForTeam.length})</summary>
+                <div>
+                    <table class="ds-table">
+                        <thead>
+                        <tr>
+                            <th>DBMS</th>
+                            <th>Database</th>
+                            <th>Overførings-tasks</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {#each naisTeam.tasksForTeam as task (task.dbname)}
+                            <tr>
+                                <td>{task.teknologi}</td>
+                                <td>{task.dbname}</td>
+                                <td>{task.okonomi ? 'Økonomi' : task.endringerUtenKrav ? 'endringer' : task.loggingLeseoperasjoner ? 'read' : 'ingen'}</td>
+                            </tr>
+                        {/each}
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+
+        {/each}
+    </div>
 </div>
