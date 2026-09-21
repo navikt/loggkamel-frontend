@@ -1,4 +1,3 @@
-/* TODO: Remember to update when using the actual api */
 export interface TeamTask {
 	naisteam: string;
 	teknologi: string;

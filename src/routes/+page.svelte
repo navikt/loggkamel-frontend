@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { PageProps } from './$types';
+    import CheckmarkCircleIcon from "$lib/assets/CheckmarkCircleIcon.svelte";
 
     let { data }: PageProps = $props();
     const teamTasks = $derived(data.teamTasks);
@@ -28,6 +29,8 @@
                     <button type="button">Database</button>
                 </th>
                 <th>Overførings-tasks</th>
+                <th>Klar</th>
+                <th>Sett logger</th>
                 <th></th>
             </tr>
             </thead>
@@ -53,6 +56,24 @@
 
                         {#if !row.okonomi && !row.endringerUtenKrav && !row.loggingLeseoperasjoner}
                             <span class="ds-tag" data-variant="default" data-color="neutral">ingen</span>
+                        {/if}
+                    </td>
+                    <td>
+                        {#if row.fiksa}
+                            <span aria-label="Fikset" role="img">
+                              <CheckmarkCircleIcon />
+                            </span>
+                        {:else}
+                            Nei
+                        {/if}
+                    </td>
+                    <td>
+                        {#if row.funnetLogger}
+                            <span aria-label="Ja" role="img">
+                              <CheckmarkCircleIcon />
+                            </span>
+                        {:else}
+                            Nei
                         {/if}
                     </td>
                     <!-- TODO: link unique for dbms+dbname -->
