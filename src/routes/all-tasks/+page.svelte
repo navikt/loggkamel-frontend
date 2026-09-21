@@ -2,7 +2,16 @@
     import type { PageProps } from './$types';
 
     let { data }: PageProps = $props();
-    const teamsWithTasks = $derived(data.teamsWithTasks);
+    const teamsWithTasks = $derived(
+        [...(data.teamsWithTasks ?? [])]
+            .sort((a, b) => a.naisteam.localeCompare(b.naisteam, 'nb', { sensitivity: 'base' }))
+            .map(team => ({
+                ...team,
+                tasksForTeam: [...team.tasksForTeam].sort((a, b) =>
+                    a.dbname.localeCompare(b.dbname, 'nb', { sensitivity: 'base' })
+                )
+            }))
+    );
 </script>
 
 <div class="container">
