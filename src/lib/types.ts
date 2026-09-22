@@ -17,3 +17,15 @@ export interface TeamsWithTasks {
 	naisteam: string;
 	tasksForTeam: TeamTask[];
 }
+
+export interface RerunPull {
+	id: bigint;
+	dbname: string;
+	teknologi: string;
+	pullStartDate: string;
+	pullEndDate: string;
+	failureReason: string;
+	resolved: boolean;
+	created: string;
+	updated: string;
+}

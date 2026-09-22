@@ -40,7 +40,7 @@
                     <td>{row.naisteam}</td>
                     <td>{row.teknologi}</td>
                     <td>{row.dbname}</td>
-                    <!-- TODO: find out whether to add arkivlov & if so, add to loggkamel-db too -->
+                    <!-- TODO: find out whether to add arkivlov & if so, add to backend too -->
                     <td>
                         {#if row.okonomi}
                             <span class="ds-tag">Økonomi</span>
@@ -76,12 +76,11 @@
                             Nei
                         {/if}
                     </td>
-                    <!-- TODO: link unique for dbms+dbname -->
                     <td style="text-align: right;">
                         <a
                                 class="ds-link"
                                 id="row-link"
-                                href="/update/{row.teknologi}-{row.dbname}"
+                                href={`/update?teknologi=${encodeURIComponent(row.teknologi)}&dbname=${encodeURIComponent(row.dbname)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                         >Endre</a>

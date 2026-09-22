@@ -12,6 +12,7 @@
         (gå via <a href="https://audit-approval.iap.nav.cloud.nais.io">GAAL</a> for å se i 2 års-log bucket'en).
     </div>
 
+    <!-- TODO: Options blant "mine" naisteam -->
     <ds-field class="ds-field" style="margin-bottom:1.25rem;">
         <label for="naisteam" class="ds-label">Velg hvilket naisteam som får loggene</label>
         <p class="ds-paragraph">Naisteamet får tilgang til loggene i GAAL og 2 års-log bucket'en.</p>
@@ -49,8 +50,9 @@
                     checked=""
                     value="okonomi"
             />
-            <label for="økonomi" class="ds-label" data-weight="regular">Økonomi- eller hjelpesystem: Overfør endringslogger til GAAL</label>
+            <label for="okonomi" class="ds-label" data-weight="regular">Økonomi- eller hjelpesystem: Overfør endringslogger til GAAL</label>
         </ds-field>
+        <!-- TODO: Arkivlov?
         <ds-field class="ds-field">
             <input
                     class="ds-input"
@@ -59,6 +61,16 @@
                     value="arkivlov"
             />
             <label for="arkivforskrift" class="ds-label" data-weight="regular">Databasen skal forvaltes som arkiv: Overfør endringslogger (til GAAL, men ingen krav om gjennomgang)</label>
+        </ds-field>
+        -->
+        <ds-field class="ds-field">
+            <input
+                    class="ds-input"
+                    type="checkbox"
+                    name="_R_0_"
+                    value="endringerUtenKrav"
+            />
+            <label for="endringerUtenKrav" class="ds-label" data-weight="regular">Endringslogger (DML, DCL og DDL) overføres for databasen, uten at det foreligger lovkrav.</label>
         </ds-field>
         <ds-field class="ds-field">
             <input
@@ -71,7 +83,6 @@
         </ds-field>
     </fieldset>
 
-    <!-- TODO: Formulering -->
     <fieldset class="ds-fieldset" style="margin-bottom:1.5rem;">
         <legend class="ds-label">Mange logger allerede gjennomgått?</legend>
         <ds-field class="ds-field">
@@ -81,7 +92,7 @@
                     name="_R_0_"
                     value="quiet"
             />
-            <label for="quiet" class="ds-label" data-weight="regular">Overfør manuelt logger fra 2026 eldre enn 29 dager rett til arkivet ved oppretting, ikke til GAAL</label>
+            <label for="quiet" class="ds-label" data-weight="regular">Overfør manuelt logger fra 2026 eldre enn 29 dager rett til kald-arkivet ved oppretting, ikke til GAAL</label>
         </ds-field>
     </fieldset>
 

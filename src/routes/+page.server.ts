@@ -7,6 +7,5 @@ export const load: PageServerLoad = async () => {
 		// TODO: Bytt til 'https://loggkamel.intern.dev.nav.no/api/v1/naisteam/mine'
 	);
 	const teamTasks: TeamTask[] = await response.json();
-	console.log(teamTasks);
 	return { teamTasks };
 };
