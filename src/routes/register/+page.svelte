@@ -92,7 +92,7 @@
                     name="_R_0_"
                     value="quiet"
             />
-            <label for="quiet" class="ds-label" data-weight="regular">Overfør manuelt logger fra 2026 eldre enn 29 dager rett til kald-arkivet ved oppretting, ikke til GAAL</label>
+            <label for="quiet" class="ds-label" data-weight="regular">Overfør manuelt logger fra tidligere i 2026 rett til kald-arkivet ved oppretting, ikke til GAAL</label>
         </ds-field>
     </fieldset>
 
