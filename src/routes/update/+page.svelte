@@ -27,6 +27,7 @@
             </select>
         </ds-field>
 
+        <!-- TODO: Vis current flags -->
         <fieldset class="ds-fieldset" style="margin-bottom:1.25rem;">
             <legend for="tasks" class="ds-label">Endre overførings-tasks for databasen</legend>
             <!--<p class="ds-paragraph">Utdype mer?</p>-->
