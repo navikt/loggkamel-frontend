@@ -36,6 +36,7 @@
 	},
 	"dependencies": {
 		"@digdir/designsystemet-css": "^1.21.0",
-		"@digdir/designsystemet-web": "^1.21.0"
+		"@digdir/designsystemet-web": "^1.21.0",
+		"@sveltejs/adapter-node": "^5.5.7"
 	}
 }
