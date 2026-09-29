@@ -6,12 +6,6 @@
         Registrer on-prem database
     </h1>
 
-    <div class="ds-alert" data-color="info" style="margin-bottom:var(--ds-size-5);">
-        Pga. en bug i GCP, kan vi ikke sette riktig tid i logTime-feltet når vi overfører loggene fra tidligere i 2026 som er eldre enn 30 dager.
-        Riktig tid for SQL-kjøringen står i råloggene i <a href="https://console.cloud.google.com/logs">GCP Logs Explorer</a>
-        (gå via <a href="https://audit-approval.iap.nav.cloud.nais.io">GAAL</a> for å se i 2 års-log bucket'en).
-    </div>
-
     <!-- TODO: Options blant "mine" naisteam -->
     <ds-field class="ds-field" style="margin-bottom:1.25rem;">
         <label for="naisteam" class="ds-label">Velg hvilket naisteam som får loggene</label>
@@ -84,6 +78,11 @@
         </ds-field>
     </fieldset>
 
+    <div class="ds-alert" data-color="info" style="margin-bottom:var(--ds-size-5);">
+        Pga. en bug i GCP, kan vi ikke sette riktig tid i logTime-feltet når vi overfører loggene fra tidligere i 2026 som er eldre enn 30 dager.
+        Riktig tid for SQL-kjøringen står i råloggene i <a href="https://console.cloud.google.com/logs">GCP Logs Explorer</a>
+        (gå via <a href="https://audit-approval.iap.nav.cloud.nais.io">GAAL</a> for å se i 2 års-log bucket'en).
+    </div>
     <fieldset class="ds-fieldset" style="margin-bottom:1.5rem;">
         <legend class="ds-label">Mange logger allerede gjennomgått?</legend>
         <ds-field class="ds-field">
