@@ -63,6 +63,7 @@
             <label for="arkivforskrift" class="ds-label" data-weight="regular">Databasen skal forvaltes som arkiv: Overfør endringslogger (til GAAL, men ingen krav om gjennomgang)</label>
         </ds-field>
         -->
+        <!-- TODO: Ikke tillat endringerUtenKrav hvis økonomi eller arkivlov er valgt -->
         <ds-field class="ds-field">
             <input
                     class="ds-input"

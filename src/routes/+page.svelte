@@ -3,13 +3,39 @@
     import CheckmarkCircleIcon from "$lib/assets/CheckmarkCircleIcon.svelte";
 
     let { data }: PageProps = $props();
-    const teamTasks = $derived(data.teamTasks);
+    let sortKey = $state<'team' | 'dbms' | 'database'>('team');
+    let sortDirection = $state<'asc' | 'desc'>('asc');
+
+    function setSort(nextKey: 'team' | 'dbms' | 'database') {
+        if (sortKey === nextKey) {
+            sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            return;
+        }
+
+        sortKey = nextKey;
+        sortDirection = 'asc';
+    }
+
+    const sortedRows = $derived.by(() => {
+        const rows = [...data.teamTasks];
+        rows.sort((a, b) => {
+            const compare =
+                sortKey === 'team'
+                    ? a.naisteam.localeCompare(b.naisteam, 'nb', { sensitivity: 'base' })
+                    : sortKey === 'dbms'
+                        ? a.teknologi.localeCompare(b.teknologi, 'nb', { sensitivity: 'base' })
+                        : a.dbname.localeCompare(b.dbname, 'nb', { sensitivity: 'base' });
+
+            return sortDirection === 'asc' ? compare : -compare;
+        });
+        return rows;
+    });
 </script>
 
 <div class="container">
     <h1 class="ds-heading" data-size="xl" style="margin-bottom:var(--ds-size-5);">Logg-overføring til GCP</h1>
 
-    {#if teamTasks.length === 0}
+    {#if sortedRows.length === 0}
         <p>Ingen databaser registrert på mine naisteam (eller ingen naisteam).
             <a href="/register" class="ds-link">Registrer database</a> eller se
             <a href="/all-tasks" class="ds-link">alle registrerte databaser</a>.
@@ -19,14 +45,14 @@
             <caption>Databaser registrert på mine naisteam</caption>
             <thead>
             <tr>
-                <th aria-sort="none">
-                    <button type="button">Team</button>
+                <th aria-sort={sortKey === 'team' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}>
+                    <button type="button" onclick={() => setSort('team')}>Team</button>
                 </th>
-                <th aria-sort="none">
-                    <button type="button">DBMS</button>
+                <th aria-sort={sortKey === 'dbms' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}>
+                    <button type="button" onclick={() => setSort('dbms')}>DBMS</button>
                 </th>
-                <th aria-sort="none">
-                    <button type="button">Database</button>
+                <th aria-sort={sortKey === 'database' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}>
+                    <button type="button" onclick={() => setSort('database')}>Database</button>
                 </th>
                 <th>Overførings-tasks</th>
                 <th>Klar</th>
@@ -35,7 +61,7 @@
             </tr>
             </thead>
             <tbody>
-            {#each teamTasks as row (row.dbname)}
+            {#each sortedRows as row (row.dbname)}
                 <tr>
                     <td>{row.naisteam}</td>
                     <td>{row.teknologi}</td>

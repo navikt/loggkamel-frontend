@@ -6,9 +6,6 @@ export const load: PageServerLoad = async () => {
 		'https://loggkamel.intern.dev.nav.no/api/v1/pull/rerun-required'
 	);
 	const allRerunRequired: RerunPull[] = await response.json();
-	const teamTasks: TeamTask[] = await response.json();
-	console.log(teamTasks);
-	return { teamTasks };
 	console.log(allRerunRequired);
 	return { allRerunRequired };
 };
