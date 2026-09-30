@@ -9,6 +9,12 @@
             .sort((a, b) => a.naisteam.localeCompare(b.naisteam, 'nb', { sensitivity: 'base' }))
             .map(team => ({
                 ...team,
+                activeTaskCount: team.tasksForTeam.filter(
+                    task =>
+                        task.okonomi ||
+                        task.endringerUtenKrav ||
+                        task.loggingLeseoperasjoner
+                ).length,
                 tasksForTeam: [...team.tasksForTeam].sort((a, b) =>
                     a.dbname.localeCompare(b.dbname, 'nb', { sensitivity: 'base' })
                 )
@@ -55,7 +61,10 @@
     <div style="margin-bottom: 3rem;">
         {#each teamsWithTasks as naisTeam (naisTeam.naisteam)}
             <details class="ds-details">
-                <summary>{naisTeam.naisteam} ({naisTeam.tasksForTeam.length} tasks)</summary>
+                <summary>
+                    {naisTeam.naisteam}
+                    ({naisTeam.activeTaskCount} active tasks, {naisTeam.tasksForTeam.length} total)
+                </summary>
                 <div>
                     <table class="ds-table">
                         <thead>
