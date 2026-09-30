@@ -38,7 +38,6 @@
             <a class="ds-button" data-variant="tertiary" href="/all-tasks">Alle registreringer</a>
             <a class="ds-button" data-variant="tertiary" href="/register">Registrer database</a>
             <a class="ds-button" data-variant="tertiary" href="/about" data-sveltekit-preload-data>Om loggkamel</a>
-
         </div>
     </details>
 </nav>
