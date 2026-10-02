@@ -25,7 +25,7 @@ jobs:
         with:
           team: sikkerhetstjenesten
       - name: Deploy to Nais
-        uses: nais/deploy/actions/deploy@v2 # TODO pin
+        uses: nais/deploy/actions/deploy@v3 # TODO pin
         env:
           PRINT_PAYLOAD: true
           RESOURCE: .nais/naiserator.yaml
