@@ -37,4 +37,4 @@ jobs:
           RESOURCE: .nais/naiserator.yaml
           CLUSTER: ${{ matrix.cluster }}
           VARS: .nais/${{matrix.cluster}}.json
-          IMAGE: ${{ needs.test-build-deploy.outputs.image }}
+          # IMAGE: ${{ needs.test-build-deploy.outputs.image }}
