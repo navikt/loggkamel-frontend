@@ -34,6 +34,8 @@ jobs:
       #     cache: maven
       # - name: Build & package
       #   run: mvn -B package
+      - name: PNPM Build
+        run: pnpm run build
       - name: Build & push docker image + SBOM
         uses: nais/docker-build-push@8e41f1f58749b9248e376c25d33bfbdd2b1163c0
         id: docker-push
