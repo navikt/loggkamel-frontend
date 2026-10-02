@@ -48,7 +48,7 @@ spec:
       rules:
         - application: logging
           namespace: nais-system
-        - application: loggkamel
+        - application: loggkamel-frontend
           namespace: sikkerhetstjenesten
       external:
         {{#each outbound as |outbound|}}
@@ -56,7 +56,7 @@ spec:
                      {{/each }}
     inbound:
       rules:
-        - application: loggkamel
+        - application: loggkamel-frontend
           namespace: sikkerhetstjenesten
         {{#each inbound as |app|}}
            - application: '{{app.name}}'
