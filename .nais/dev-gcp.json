@@ -1,9 +1,6 @@
 {
 	"ingresses": ["https://loggkamel.ansatt.dev.nav.no"],
-	"inbound": [
-		{
-		}
-	],
+	"inbound": [],
 	"outbound": [
 		"loggkamel.intern.dev.nav.no"
 	],
