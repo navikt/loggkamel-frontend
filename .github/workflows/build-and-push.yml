@@ -34,8 +34,19 @@ jobs:
       #     cache: maven
       # - name: Build & package
       #   run: mvn -B package
-      - name: PNPM Build
-        run: pnpm run build
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: '11'
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          registry-url: 'https://npm.pkg.github.com/'
+      - run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.READER_TOKEN }}
+      - run: pnpm run lint
+      - run: pnpm test
+      - run: pnpm run build
       - name: Build & push docker image + SBOM
         uses: nais/docker-build-push@8e41f1f58749b9248e376c25d33bfbdd2b1163c0
         id: docker-push
