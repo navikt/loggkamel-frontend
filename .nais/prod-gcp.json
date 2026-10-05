@@ -1,11 +1,11 @@
 {
-	"ingresses": ["https://loggkamel.ansatt.dev.nav.no"],
+	"ingresses": ["https://loggkamel.ansatt.nav.no"],
 	"inbound": [],
-	"outbound": ["loggkamel.intern.dev.nav.no"],
+	"outbound": ["loggkamel.intern.nav.no"],
 	"nais": {
 		"cluster": {
 			"plan": "startup-4",
-			"type": "dev"
+			"type": "prod"
 		}
 	},
 	"mem": {

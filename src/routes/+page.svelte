@@ -1,138 +1,170 @@
 <script lang="ts">
-    import type { PageProps } from './$types';
-    import CheckmarkCircleIcon from "$lib/assets/CheckmarkCircleIcon.svelte";
+	import type { PageProps } from './$types';
+	import CheckmarkCircleIcon from '$lib/assets/CheckmarkCircleIcon.svelte';
 
-    let { data }: PageProps = $props();
-    let sortKey = $state<'team' | 'dbms' | 'database'>('team');
-    let sortDirection = $state<'asc' | 'desc'>('asc');
+	let { data }: PageProps = $props();
+	let sortKey = $state<'team' | 'dbms' | 'database'>('team');
+	let sortDirection = $state<'asc' | 'desc'>('asc');
 
-    function setSort(nextKey: 'team' | 'dbms' | 'database') {
-        if (sortKey === nextKey) {
-            sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-            return;
-        }
+	function setSort(nextKey: 'team' | 'dbms' | 'database') {
+		if (sortKey === nextKey) {
+			sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+			return;
+		}
 
-        sortKey = nextKey;
-        sortDirection = 'asc';
-    }
+		sortKey = nextKey;
+		sortDirection = 'asc';
+	}
 
-    const sortedRows = $derived.by(() => {
-        const rows = [...data.teamTasks];
-        rows.sort((a, b) => {
-            const compare =
-                sortKey === 'team'
-                    ? a.naisteam.localeCompare(b.naisteam, 'nb', { sensitivity: 'base' })
-                    : sortKey === 'dbms'
-                        ? a.teknologi.localeCompare(b.teknologi, 'nb', { sensitivity: 'base' })
-                        : a.dbname.localeCompare(b.dbname, 'nb', { sensitivity: 'base' });
+	const sortedRows = $derived.by(() => {
+		const rows = [...data.teamTasks];
+		rows.sort((a, b) => {
+			const compare =
+				sortKey === 'team'
+					? a.naisteam.localeCompare(b.naisteam, 'nb', { sensitivity: 'base' })
+					: sortKey === 'dbms'
+						? a.teknologi.localeCompare(b.teknologi, 'nb', { sensitivity: 'base' })
+						: a.dbname.localeCompare(b.dbname, 'nb', { sensitivity: 'base' });
 
-            return sortDirection === 'asc' ? compare : -compare;
-        });
-        return rows;
-    });
+			return sortDirection === 'asc' ? compare : -compare;
+		});
+		return rows;
+	});
 </script>
 
 <div class="container">
-    <h1 class="ds-heading" data-size="xl" style="margin-bottom:var(--ds-size-5);">Logg-overføring til GCP</h1>
+	<h1 class="ds-heading" data-size="xl" style="margin-bottom:var(--ds-size-5);">
+		Logg-overføring til GCP
+	</h1>
 
-    {#if sortedRows.length === 0}
-        <p>Ingen databaser registrert på mine naisteam (eller ingen naisteam).
-            <a href="/register" class="ds-link">Registrer database</a> eller se
-            <a href="/all-tasks" class="ds-link">alle registrerte databaser</a>.
-        </p>
-    {:else}
-        <table class="ds-table">
-            <caption>Databaser registrert på mine naisteam</caption>
-            <thead>
-            <tr>
-                <th aria-sort={sortKey === 'team' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}>
-                    <button type="button" onclick={() => setSort('team')}>Team</button>
-                </th>
-                <th aria-sort={sortKey === 'dbms' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}>
-                    <button type="button" onclick={() => setSort('dbms')}>DBMS</button>
-                </th>
-                <th aria-sort={sortKey === 'database' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}>
-                    <button type="button" onclick={() => setSort('database')}>Database</button>
-                </th>
-                <th>Overførings-tasks</th>
-                <th>Klar</th>
-                <th>Sett logger</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            {#each sortedRows as row (row.dbname)}
-                <tr>
-                    <td>{row.naisteam}</td>
-                    <td>{row.teknologi}</td>
-                    <td>{row.dbname}</td>
-                    <!-- TODO: find out whether to add arkivlov & if so, add to backend too -->
-                    <td>
-                        {#if row.okonomi}
-                            <span class="ds-tag">Økonomi</span>
-                        {/if}
+	{#if sortedRows.length === 0}
+		<p>
+			Ingen databaser registrert på mine naisteam (eller ingen naisteam).
+			<a href="/register" class="ds-link">Registrer database</a> eller se
+			<a href="/all-tasks" class="ds-link">alle registrerte databaser</a>.
+		</p>
+	{:else}
+		<table class="ds-table">
+			<caption>Databaser registrert på mine naisteam</caption>
+			<thead>
+				<tr>
+					<th
+						aria-sort={sortKey === 'team'
+							? sortDirection === 'asc'
+								? 'ascending'
+								: 'descending'
+							: 'none'}
+					>
+						<button type="button" onclick={() => setSort('team')}>Team</button>
+					</th>
+					<th
+						aria-sort={sortKey === 'dbms'
+							? sortDirection === 'asc'
+								? 'ascending'
+								: 'descending'
+							: 'none'}
+					>
+						<button type="button" onclick={() => setSort('dbms')}>DBMS</button>
+					</th>
+					<th
+						aria-sort={sortKey === 'database'
+							? sortDirection === 'asc'
+								? 'ascending'
+								: 'descending'
+							: 'none'}
+					>
+						<button type="button" onclick={() => setSort('database')}>Database</button>
+					</th>
+					<th>Overførings-tasks</th>
+					<th>Klar</th>
+					<th>Sett logger</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each sortedRows as row (row.dbname)}
+					<tr>
+						<td>{row.naisteam}</td>
+						<td>{row.teknologi}</td>
+						<td>{row.dbname}</td>
+						<!-- TODO: find out whether to add arkivlov & if so, add to backend too -->
+						<td>
+							{#if row.okonomi}
+								<span class="ds-tag">Økonomi</span>
+							{/if}
 
-                        {#if row.endringerUtenKrav && !row.okonomi}
-                            <span class="ds-tag">endringer</span>
-                        {/if}
+							{#if row.endringerUtenKrav && !row.okonomi}
+								<span class="ds-tag">endringer</span>
+							{/if}
 
-                        {#if row.loggingLeseoperasjoner}
-                            <span class="ds-tag" data-color="success">read</span>
-                        {/if}
+							{#if row.loggingLeseoperasjoner}
+								<span class="ds-tag" data-color="success">read</span>
+							{/if}
 
-                        {#if !row.okonomi && !row.endringerUtenKrav && !row.loggingLeseoperasjoner}
-                            <span class="ds-tag" data-variant="default" data-color="neutral">ingen</span>
-                        {/if}
-                    </td>
-                    <td>
-                        {#if row.fiksa}
-                            <span aria-label="Fikset" role="img">
-                              <CheckmarkCircleIcon />
-                            </span>
-                        {:else}
-                            Nei
-                        {/if}
-                    </td>
-                    <td>
-                        {#if row.funnetLogger}
-                            <span aria-label="Ja" role="img">
-                              <CheckmarkCircleIcon />
-                            </span>
-                        {:else}
-                            Nei
-                        {/if}
-                    </td>
-                    <td style="text-align: right;">
-                        <a
-                                class="ds-link"
-                                id="row-link"
-                                href={`/update?teknologi=${encodeURIComponent(row.teknologi)}&dbname=${encodeURIComponent(row.dbname)}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                        >Endre</a>
-                    </td>
-                </tr>
-            {/each}
-            </tbody>
-        </table>
-    {/if}
+							{#if !row.okonomi && !row.endringerUtenKrav && !row.loggingLeseoperasjoner}
+								<span class="ds-tag" data-variant="default" data-color="neutral">ingen</span>
+							{/if}
+						</td>
+						<td>
+							{#if row.fiksa}
+								<span aria-label="Fikset" role="img">
+									<CheckmarkCircleIcon />
+								</span>
+							{:else}
+								Nei
+							{/if}
+						</td>
+						<td>
+							{#if row.funnetLogger}
+								<span aria-label="Ja" role="img">
+									<CheckmarkCircleIcon />
+								</span>
+							{:else}
+								Nei
+							{/if}
+						</td>
+						<td style="text-align: right;">
+							<a
+								class="ds-link"
+								id="row-link"
+								href={`/update?teknologi=${encodeURIComponent(row.teknologi)}&dbname=${encodeURIComponent(row.dbname)}`}
+								target="_blank"
+								rel="noopener noreferrer">Endre</a
+							>
+						</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	{/if}
 
-    <h2 class="ds-heading" data-size="m" style="margin-bottom:var(--ds-size-4); margin-top: 3rem;">
-        Forklaring av overførings-tasks
-    </h2>
-    <p> <span class="ds-tag" style="margin-right: 0.5rem;">Økonomi</span>
-        Databasen er et økonomi- eller hjelpesystem, endringslogger overføres (DML, DCL og DDL). Lagres i 11 år.
-    </p>
-    <p> <span class="ds-tag" style="margin-right: 0.5rem;">Arkivlov</span>
-        Databasen skal forvaltes som arkiv (iht. arkivforskrifta § 5), endringslogger overføres (DML, DCL og DDL). Lagres i 11 år.
-    </p>
-    <p> <span class="ds-tag" style="margin-right: 0.5rem;">endringer</span>
-        Endringslogger (DML, DCL og DDL) overføres for databasen, uten at det foreligger lovkrav. Lagres i 11 år.
-    </p>
-    <p> <span class="ds-tag" data-color="success" style="margin-right: 0.5rem;">read</span>
-        SELECT-logger overføres til naisteamets Default log bucket (standard-lagringstid på 30 dager), og videresendes ikke av Nais.
-    </p>
-    <p> <span class="ds-tag" data-variant="default" data-color="neutral" style="margin-right: 0.5rem;">Ingen</span>
-        Tasks slettet eller registrert uten tasks (så loggkamel kan ignorere loggene).
-    </p>
+	<h2 class="ds-heading" data-size="m" style="margin-bottom:var(--ds-size-4); margin-top: 3rem;">
+		Forklaring av overførings-tasks
+	</h2>
+	<p>
+		<span class="ds-tag" style="margin-right: 0.5rem;">Økonomi</span>
+		Databasen er et økonomi- eller hjelpesystem, endringslogger overføres (DML, DCL og DDL). Lagres i
+		11 år.
+	</p>
+	<p>
+		<span class="ds-tag" style="margin-right: 0.5rem;">Arkivlov</span>
+		Databasen skal forvaltes som arkiv (iht. arkivforskrifta § 5), endringslogger overføres (DML, DCL
+		og DDL). Lagres i 11 år.
+	</p>
+	<p>
+		<span class="ds-tag" style="margin-right: 0.5rem;">endringer</span>
+		Endringslogger (DML, DCL og DDL) overføres for databasen, uten at det foreligger lovkrav. Lagres i
+		11 år.
+	</p>
+	<p>
+		<span class="ds-tag" data-color="success" style="margin-right: 0.5rem;">read</span>
+		SELECT-logger overføres til naisteamets Default log bucket (standard-lagringstid på 30 dager), og
+		videresendes ikke av Nais.
+	</p>
+	<p>
+		<span class="ds-tag" data-variant="default" data-color="neutral" style="margin-right: 0.5rem;"
+			>Ingen</span
+		>
+		Tasks slettet eller registrert uten tasks (så loggkamel kan ignorere loggene).
+	</p>
 </div>
