@@ -1,0 +1,22 @@
+{
+	"ingresses": ["https://loggkamel.ansatt.nav.no"],
+	"inbound": [],
+	"outbound": ["loggkamel.intern.nav.no"],
+	"nais": {
+		"cluster": {
+			"plan": "startup-4",
+			"type": "prod"
+		}
+	},
+	"mem": {
+		"min": "384Mi",
+		"max": "2Gi"
+	},
+	"cpu": {
+		"min": "30m"
+	},
+	"replica": {
+		"min": 1,
+		"max": 1
+	}
+}

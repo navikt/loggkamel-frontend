@@ -9,5 +9,8 @@ ENV NPM_CONFIG_CACHE /tmp
 # COPY server server/
 COPY build build/
 
+ENV NODE_ENV=production \
+    PORT=8080
+
 EXPOSE 8080
 CMD ["build/index.js"]
