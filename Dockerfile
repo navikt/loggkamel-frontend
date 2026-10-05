@@ -3,10 +3,11 @@ FROM europe-north1-docker.pkg.dev/cgr-nav/pull-through/nav.no/node:22-slim
 ENV NODE_ENV production
 ENV NPM_CONFIG_CACHE /tmp
 
-WORKDIR /app
+# WORKDIR /app
 
-COPY dist dist/
-COPY server server/
+# COPY dist dist/
+# COPY server server/
+COPY build build/
 
 EXPOSE 8080
-CMD ["server/dist/index.js"]
+CMD ["build/index.js"]
