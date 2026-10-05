@@ -4,7 +4,7 @@ on:
     branches:
       - main
     paths-ignore:
-      - "*.md"
+      - '*.md'
 
 jobs:
   test-build-deploy:
@@ -24,7 +24,7 @@ jobs:
     needs: test-build-deploy
     strategy:
       matrix:
-        cluster: [ dev-gcp ]
+        cluster: [dev-gcp]
     name: Deploy to ${{ matrix.cluster }}
     environment: ${{ matrix.cluster }}:sikkerhetstjenesten
     steps:

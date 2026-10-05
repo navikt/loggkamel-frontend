@@ -1,9 +1,7 @@
 {
 	"ingresses": ["https://loggkamel.ansatt.dev.nav.no"],
 	"inbound": [],
-	"outbound": [
-		"loggkamel.intern.dev.nav.no"
-	],
+	"outbound": ["loggkamel.intern.dev.nav.no"],
 	"nais": {
 		"cluster": {
 			"plan": "startup-4",

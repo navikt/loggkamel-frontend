@@ -1,16 +1,18 @@
 # Loggkamel frontend
 
-Frontend for å registrere, se og endre overførings-tasks for loggkamel. 
+Frontend for å registrere, se og endre overførings-tasks for loggkamel.
 Loggkamel overfører SQL-logger fra on-prem databaser til Nais' lagringsløsning og [Gjennomgang av auditlogger (GAAL)](https://audit-approval.iap.nav.cloud.nais.io/).
 
 Kontakt oss på Slack
-* [#team-sikkerhetstjenesten](https://nav-it.slack.com/archives/C09KKNS0RJS) for alt angående loggkamel og frontenden
-* [nais-database-auditlogging](https://nav-it.slack.com/archives/C0A29KP884T) for Nais' lagringsløsning og [GAAL](https://audit-approval.iap.nav.cloud.nais.io/)
+
+- [#team-sikkerhetstjenesten](https://nav-it.slack.com/archives/C09KKNS0RJS) for alt angående loggkamel og frontenden
+- [nais-database-auditlogging](https://nav-it.slack.com/archives/C0A29KP884T) for Nais' lagringsløsning og [GAAL](https://audit-approval.iap.nav.cloud.nais.io/)
 
 ## Tech stack
-* [SvelteKit](https://kit.svelte.dev/)
-* [Designsystemet.no](https://designsystemet.no/)
-* Typescript
+
+- [SvelteKit](https://kit.svelte.dev/)
+- [Designsystemet.no](https://designsystemet.no/)
+- Typescript
 
 ## Kjøre lokalt
 
