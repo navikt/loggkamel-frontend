@@ -3,9 +3,6 @@ FROM europe-north1-docker.pkg.dev/cgr-nav/pull-through/nav.no/node:24-dev AS dep
 USER root
 WORKDIR /app
 COPY package.json pnpm-lock.yaml .npmrc ./
-# The prepare script needs build tooling, which is not installed in this stage.
-# RUN npm install --global pnpm@11.22.0 \
-#     && pnpm install --prod --frozen-lockfile --ignore-scripts
 RUN pnpm install --prod --frozen-lockfile --ignore-scripts
 
 FROM europe-north1-docker.pkg.dev/cgr-nav/pull-through/nav.no/node:24-slim

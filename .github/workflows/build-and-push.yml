@@ -11,8 +11,6 @@ jobs:
     permissions:
       actions: read # for sarif
       contents: read
-      # contents: write # for dependency graph & sarif
-      # security-events: write # push sarif to github security
       id-token: write # for nais docker-build-push
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -22,19 +20,6 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      # - name: Cache Dependencies
-      #   uses: actions/cache@v6
-      #   with:
-      #     path: ~/.m2/repository
-      #     key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-      #     restore-keys: ${{ runner.os }}-maven-
-      # - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
-      #   with:
-      #     java-version: 25
-      #     distribution: temurin
-      #     cache: maven
-      # - name: Build & package
-      #   run: mvn -B package
       - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
         with:
           version: '11.22.0'
@@ -55,22 +40,3 @@ jobs:
         with:
           team: sikkerhetstjenesten
           pull: true
-      # byosbom: target/classes/META-INF/sbom/application.cdx.json
-      # - name: Generate and submit dependency graph
-      #   uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
-      # - name: Build and push image and SBOM to OCI registry
-      #   if: steps.changed-files.outputs.changed != 'only-inputs'
-      #   uses: nais/docker-build-push@v0 # TODO pin
-      #   id: docker-build-push
-      #   with:
-      #     team: sikkerhetstjenesten
-      # - name: Scan docker image for secrets
-      #   uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
-      #   with:
-      #     image-ref: '${{ steps.docker-push.outputs.image }}'
-      #     format: 'sarif'
-      #     scanners: 'secret'
-      #     output: 'trivy.sarif'
-      # - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2
-      #   with:
-      #     sarif_file: 'trivy.sarif'
