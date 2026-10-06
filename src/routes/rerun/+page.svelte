@@ -15,33 +15,31 @@
 		Backenden sjekker om du er i naisteamet Sikkerhetstjenesten, frontenden er lat.
 	</div>
 
-
-		<table class="ds-table">
-			<caption>Pulls som trengs å rerun</caption>
-			<thead>
+	<table class="ds-table">
+		<caption>Pulls som trengs å rerun</caption>
+		<thead>
+			<tr>
+				<th>Teknologi</th>
+				<th>Database</th>
+				<th>Hvorfor</th>
+				<th>Rerun</th>
+				<th>Mark as</th>
+			</tr>
+		</thead>
+		<tbody>
+			{#each rerunPulls as pull}
 				<tr>
-					<th>Teknologi</th>
-					<th>Database</th>
-					<th>Hvorfor</th>
-					<th>Rerun</th>
-					<th>Mark as</th>
+					<td>{pull.teknologi}</td>
+					<td>{pull.dbname}</td>
+					<td>{pull.failureReason}</td>
+					<td>
+						<button class="ds-button">Rerun</button>
+					</td>
+					<td>
+						<button class="ds-button">Resolved</button>
+					</td>
 				</tr>
-			</thead>
-			<tbody>
-				{#each rerunPulls as pull}
-					<tr>
-						<td>{pull.teknologi}</td>
-						<td>{pull.dbname}</td>
-						<td>{pull.failureReason}</td>
-						<td>
-							<button class="ds-button">Rerun</button>
-						</td>
-						<td>
-							<button class="ds-button">Resolved</button>
-						</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-
+			{/each}
+		</tbody>
+	</table>
 </div>
