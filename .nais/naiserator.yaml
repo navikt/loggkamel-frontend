@@ -22,7 +22,7 @@ spec:
     logging:
       destinations:
         - id: loki
-        #- id: elastic
+        - id: elastic
     autoInstrumentation:
       enabled: true
       runtime: nodejs
