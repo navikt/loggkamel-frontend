@@ -3,7 +3,7 @@ import type { TeamTask, TeamsWithTasks } from '$lib/types';
 import { getToken, requestOboToken, validateToken } from '@navikt/oasis';
 
 const LOGGKAMEL_API_URL = 'https://loggkamel.intern.dev.nav.no/api/v1';
-const LOGGKAMEL_OBO_SCOPE_PLACEHOLDER = 'loggkamel.does.not.validate.scopes';
+const LOGGKAMEL_OBO_AUDIENCE = 'api://dev-gcp.sikkerhetstjenesten.loggkamel/.default';
 
 export const load: PageServerLoad = async ({ fetch, request }) => {
 	const token = getToken(request);
@@ -16,7 +16,7 @@ export const load: PageServerLoad = async ({ fetch, request }) => {
 		return { teamTasks: [], error: 'Innloggingen din er ikke gyldig. Logg inn på nytt.' };
 	}
 
-	const oboResult = await requestOboToken(token, LOGGKAMEL_OBO_SCOPE_PLACEHOLDER);
+	const oboResult = await requestOboToken(token, LOGGKAMEL_OBO_AUDIENCE);
 	if (!oboResult.ok) {
 		return {
 			teamTasks: [],
