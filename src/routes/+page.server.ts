@@ -1,14 +1,19 @@
 import type { PageServerLoad } from './$types';
-import type { TeamTask } from '$lib/types';
-import { getToken, requestOboToken } from '@navikt/oasis';
+import type { TeamTask, TeamsWithTasks } from '$lib/types';
+import { getToken, requestOboToken, validateToken } from '@navikt/oasis';
 
-const LOGGKAMEL_API_URL = 'https://loggkamel.intern.dev.nav.no/api/v1/naisteam';
+const LOGGKAMEL_API_URL = 'https://loggkamel.intern.dev.nav.no/api/v1';
 const LOGGKAMEL_OBO_SCOPE_PLACEHOLDER = 'api://loggkamel/.default';
 
 export const load: PageServerLoad = async ({ fetch, request }) => {
 	const token = getToken(request);
 	if (!token) {
 		return { teamTasks: [], error: 'Du må være logget inn for å se registrerte databaser.' };
+	}
+
+	const validation = await validateToken(token);
+	if (!validation.ok) {
+		return { teamTasks: [], error: 'Innloggingen din er ikke gyldig. Logg inn på nytt.' };
 	}
 
 	const oboResult = await requestOboToken(token, LOGGKAMEL_OBO_SCOPE_PLACEHOLDER);
@@ -21,46 +26,21 @@ export const load: PageServerLoad = async ({ fetch, request }) => {
 
 	try {
 		const headers = { Authorization: `Bearer ${oboResult.token}` };
-		const teamsResponse = await fetch(`${LOGGKAMEL_API_URL}/mine`, {
+		const response = await fetch(`${LOGGKAMEL_API_URL}/task/mine`, {
 			headers,
 			cache: 'no-store'
 		});
 
-		if (!teamsResponse.ok) {
+		if (!response.ok) {
 			return {
 				teamTasks: [],
-				error: 'Kunne ikke hente naisteamene dine fra Loggkamel. Prøv igjen senere.'
+				error: 'Kunne ikke hente oppgavene dine fra Loggkamel. Prøv igjen senere.'
 			};
 		}
 
-		const teams: unknown = await teamsResponse.json();
-		if (!Array.isArray(teams) || !teams.every((team): team is string => typeof team === 'string')) {
-			return {
-				teamTasks: [],
-				error: 'Loggkamel returnerte en ugyldig liste over naisteam.'
-			};
-		}
-
-		const taskResponses = await Promise.all(
-			teams.map((team) =>
-				fetch(`${LOGGKAMEL_API_URL}/auditlogg/${encodeURIComponent(team)}`, {
-					headers,
-					cache: 'no-store'
-				})
-			)
-		);
-
-		if (taskResponses.some((response) => !response.ok)) {
-			return {
-				teamTasks: [],
-				error: 'Kunne ikke hente alle oppgavene fra Loggkamel. Prøv igjen senere.'
-			};
-		}
-
-		const taskLists: TeamTask[][] = await Promise.all(
-			taskResponses.map((response) => response.json())
-		);
-		return { teamTasks: taskLists.flat(), error: null };
+		const teamsWithTasks: TeamsWithTasks[] = await response.json();
+		const teamTasks: TeamTask[] = teamsWithTasks.flatMap((team) => team.tasksForTeam);
+		return { teamTasks, error: null };
 	} catch (error) {
 		if (error instanceof TypeError) {
 			return {
