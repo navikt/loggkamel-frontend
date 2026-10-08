@@ -4,7 +4,7 @@ USER root
 WORKDIR /app
 # COPY package.json pnpm-lock.yaml .npmrc ./
 # RUN pnpm install --prod --frozen-lockfile --ignore-scripts
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY package.json pnpm-lock.yaml .npmrc ./
 RUN --mount=type=secret,id=NODE_AUTH_TOKEN,env=NODE_AUTH_TOKEN \
     pnpm config set //npm.pkg.github.com/:_authToken="${NODE_AUTH_TOKEN}" && \
     pnpm install --prod --frozen-lockfile --ignore-scripts
