@@ -37,7 +37,9 @@
 		Logg-overføring til GCP
 	</h1>
 
-	{#if sortedRows.length === 0}
+	{#if data.error}
+		<p role="alert">{data.error}</p>
+	{:else if sortedRows.length === 0}
 		<p>
 			Ingen databaser registrert på mine naisteam (eller ingen naisteam).
 			<a href="/register" class="ds-link">Registrer database</a> eller se
