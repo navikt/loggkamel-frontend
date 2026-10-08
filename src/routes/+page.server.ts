@@ -3,7 +3,7 @@ import type { TeamTask, TeamsWithTasks } from '$lib/types';
 import { getToken, requestOboToken, validateToken } from '@navikt/oasis';
 
 const LOGGKAMEL_API_URL = 'https://loggkamel.intern.dev.nav.no/api/v1';
-const LOGGKAMEL_OBO_SCOPE_PLACEHOLDER = 'api://loggkamel/.default';
+const LOGGKAMEL_OBO_SCOPE_PLACEHOLDER = 'loggkamel.does.not.validate.scopes';
 
 export const load: PageServerLoad = async ({ fetch, request }) => {
 	const token = getToken(request);
