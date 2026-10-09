@@ -5,7 +5,8 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml .npmrc ./
 RUN --mount=type=secret,id=NODE_AUTH_TOKEN,env=NODE_AUTH_TOKEN \
     pnpm config set //npm.pkg.github.com/:_authToken="${NODE_AUTH_TOKEN}" && \
-    pnpm install --prod --frozen-lockfile --ignore-scripts
+    pnpm install --prod --frozen-lockfile --ignore-scripts && \
+    pnpm config delete //npm.pkg.github.com/:_authToken
 
 FROM europe-north1-docker.pkg.dev/cgr-nav/pull-through/nav.no/node:24-slim
 
