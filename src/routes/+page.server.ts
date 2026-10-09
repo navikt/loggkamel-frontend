@@ -1,11 +1,59 @@
 import type { PageServerLoad } from './$types';
-import type { TeamTask } from '$lib/types';
+import type { TeamTask, TeamsWithTasks } from '$lib/types';
+import { getToken, requestAzureOboToken, validateToken } from '@navikt/oasis';
 
-export const load: PageServerLoad = async () => {
-	const response = await fetch(
-		'https://loggkamel.intern.dev.nav.no/api/v1/naisteam/auditlogg/sikkerhetstjenesten'
-		// TODO: Bytt til 'https://loggkamel.intern.dev.nav.no/api/v1/naisteam/mine'
-	);
-	const teamTasks: TeamTask[] = await response.json();
-	return { teamTasks };
+const LOGGKAMEL_API_URL = 'https://loggkamel.intern.dev.nav.no/api/v1';
+const LOGGKAMEL_OBO_AUDIENCE = 'api://dev-gcp.sikkerhetstjenesten.loggkamel/.default';
+
+export const load: PageServerLoad = async ({ fetch, request }) => {
+	const token = getToken(request);
+	if (!token) {
+		return { teamTasks: [], error: 'Du må være logget inn for å se registrerte databaser.' };
+	}
+
+	const validation = await validateToken(token);
+	if (!validation.ok) {
+		return { teamTasks: [], error: 'Innloggingen din er ikke gyldig. Logg inn på nytt.' };
+	}
+
+	const oboResult = await requestAzureOboToken(token, LOGGKAMEL_OBO_AUDIENCE);
+	if (!oboResult.ok) {
+		return {
+			teamTasks: [],
+			error: 'Kunne ikke hente et tilgangstoken for Loggkamel. Prøv igjen senere.'
+		};
+	}
+
+	try {
+		const headers = { Authorization: `Bearer ${oboResult.token}` };
+		const response = await fetch(`${LOGGKAMEL_API_URL}/task/mine`, {
+			headers,
+			cache: 'no-store'
+		});
+
+		if (!response.ok) {
+			return {
+				teamTasks: [],
+				error: 'Kunne ikke hente oppgavene dine fra Loggkamel. Prøv igjen senere.'
+			};
+		}
+
+		const teamsWithTasks: TeamsWithTasks[] = await response.json();
+		const teamTasks: TeamTask[] = teamsWithTasks.flatMap((team) => team.tasksForTeam);
+		return { teamTasks, error: null };
+	} catch (error) {
+		if (error instanceof TypeError) {
+			return {
+				teamTasks: [],
+				error: 'Kunne ikke koble til Loggkamel. Prøv igjen senere.'
+			};
+		}
+		if (error instanceof SyntaxError) {
+			return {
+				teamTasks: [],
+				error: 'Loggkamel returnerte data vi ikke kunne lese. Prøv igjen senere.'
+			};
+		}
+		throw error;
+	}
 };

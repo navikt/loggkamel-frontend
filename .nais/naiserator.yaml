@@ -9,7 +9,6 @@ spec:
   azure:
     application:
       enabled: true
-      tenant: nav.no
       allowAllUsers: true
     sidecar:
       enabled: true
@@ -49,21 +48,11 @@ spec:
       rules:
         - application: logging
           namespace: nais-system
-        - application: loggkamel-frontend
-          namespace: sikkerhetstjenesten
+        - application: loggkamel
       external:
         {{#each outbound as |outbound|}}
            - host: '{{outbound}}'
                      {{/each }}
-    inbound:
-      rules:
-        - application: loggkamel-frontend
-          namespace: sikkerhetstjenesten
-        {{#each inbound as |app|}}
-           - application: '{{app.name}}'
-               namespace: '{{app.namespace}}'
-               cluster: '{{app.cluster}}'
-               {{/each }}
   env:
     - name: NAIS_CLUSTER_TYPE
       value: {{nais.cluster.type}}
