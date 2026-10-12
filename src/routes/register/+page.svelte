@@ -11,7 +11,7 @@
 		<label for="naisteam" class="ds-label">Velg hvilket naisteam som får loggene</label>
 		<p class="ds-paragraph">Naisteamet får tilgang til loggene i GAAL og 2 års-log bucket'en.</p>
 		<select class="ds-input">
-			<option value="" disabled="" selected="">Velg naisteam …</option>
+			<option value="" disabled selected>Velg naisteam …</option>
 			<option value="everest">Everest</option>
 			<option value="aconcagua">Aconcagua</option>
 			<option value="denali">Denali</option>
@@ -21,7 +21,7 @@
 	<ds-field class="ds-field" style="margin-bottom:1.25rem;">
 		<label for="teknologi" class="ds-label">Oppgi databaseteknologi</label>
 		<select class="ds-input">
-			<option value="" disabled="" selected="">Velg DBMS …</option>
+			<option value="" disabled selected>Velg DBMS …</option>
 			<option value="everest">PostgreSQL FSS</option>
 			<option value="aconcagua">DB2</option>
 			<option value="denali">Oracle</option>
@@ -34,10 +34,10 @@
 	</ds-field>
 
 	<fieldset class="ds-fieldset" style="margin-bottom:1.25rem;">
-		<legend for="tasks" class="ds-label">Velg overførings-tasks for databasen</legend>
+		<legend class="ds-label">Velg overførings-tasks for databasen</legend>
 		<!--<p class="ds-paragraph">Utdype mer?</p>-->
 		<ds-field class="ds-field">
-			<input class="ds-input" type="checkbox" name="_R_0_" checked="" value="okonomi" />
+			<input class="ds-input" type="checkbox" name="_R_0_" checked value="okonomi" />
 			<label for="okonomi" class="ds-label" data-weight="regular"
 				>Økonomi- eller hjelpesystem: Overfør endringslogger til GAAL</label
 			>

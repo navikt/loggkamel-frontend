@@ -20,7 +20,7 @@
 			<label for="naisteam" class="ds-label">Endre hvilket naisteam som får loggene</label>
 			<p class="ds-paragraph">Naisteamet får tilgang til loggene i GAAL og 2 års-log bucket'en.</p>
 			<select class="ds-input">
-				<option value="currentTeam" selected="">current-team</option>
+				<option value="currentTeam" selected>current-team</option>
 				<!-- TODO -->
 				<option value="everest">Everest</option>
 				<option value="aconcagua">Aconcagua</option>
@@ -30,10 +30,10 @@
 
 		<!-- TODO: Vis current flags -->
 		<fieldset class="ds-fieldset" style="margin-bottom:1.25rem;">
-			<legend for="tasks" class="ds-label">Endre overførings-tasks for databasen</legend>
+			<legend class="ds-label">Endre overførings-tasks for databasen</legend>
 			<!--<p class="ds-paragraph">Utdype mer?</p>-->
 			<ds-field class="ds-field">
-				<input class="ds-input" type="checkbox" name="_R_0_" checked="" value="okonomi" />
+				<input class="ds-input" type="checkbox" name="_R_0_" checked value="okonomi" />
 				<label for="okonomi" class="ds-label" data-weight="regular"
 					>Økonomi- eller hjelpesystem: Overfør endringslogger til GAAL</label
 				>
