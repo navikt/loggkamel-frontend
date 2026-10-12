@@ -75,7 +75,7 @@ describe('registration page load and action', () => {
 				fetch,
 				createFormRequest({
 					naisteam: 'team-a',
-					teknologi: 'PostgreSQL',
+					teknologi: 'POSTGRESQL',
 					dbname: 'audit-db',
 					discardLogs: 'true',
 					okonomi: 'true',
@@ -94,7 +94,7 @@ describe('registration page load and action', () => {
 				cache: 'no-store',
 				body: JSON.stringify({
 					naisteam: 'team-a',
-					teknologi: 'PostgreSQL',
+					teknologi: 'POSTGRESQL',
 					dbname: 'audit-db',
 					backfill: 'requested',
 					okonomi: true,

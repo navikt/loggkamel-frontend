@@ -45,7 +45,7 @@
 			<label for="teknologi" class="ds-label">Oppgi databaseteknologi</label>
 			<select class="ds-input" id="teknologi" name="teknologi" required>
 				<option value="" disabled selected>Velg DBMS …</option>
-				<option value="POSTGRESQL">PostgreSQL</option>
+				<option value="POSTGRESQL">Postgres</option>
 				<option value="DB2">DB2</option>
 			</select>
 		</ds-field>
