@@ -1,4 +1,8 @@
-<script>
+<script lang="ts">
+	import { enhance } from '$app/forms';
+	import type { PageProps } from './$types';
+
+	let { data, form }: PageProps = $props();
 </script>
 
 <div class="container small">
@@ -6,85 +10,105 @@
 		Registrer on-prem database
 	</h1>
 
-	<!-- TODO: Options blant "mine" naisteam -->
-	<ds-field class="ds-field" style="margin-bottom:1.25rem;">
-		<label for="naisteam" class="ds-label">Velg hvilket naisteam som får loggene</label>
-		<p class="ds-paragraph">Naisteamet får tilgang til loggene i GAAL og 2 års-log bucket'en.</p>
-		<select class="ds-input">
-			<option value="" disabled selected>Velg naisteam …</option>
-			<option value="everest">Everest</option>
-			<option value="aconcagua">Aconcagua</option>
-			<option value="denali">Denali</option>
-		</select>
-	</ds-field>
+	{#if data.error}
+		<div class="ds-alert" data-color="danger" role="alert">{data.error}</div>
+	{/if}
+	{#if !data.error && data.naisteams.length === 0}
+		<p class="ds-paragraph">Du er ikke medlem av et naisteam du kan registrere databaser på.</p>
+	{/if}
+	{#if form?.error}
+		<div class="ds-alert" data-color="danger" role="alert">{form.error}</div>
+	{/if}
+	{#if form?.success}
+		<div class="ds-alert" data-color="success" role="status">Databasen er registrert.</div>
+	{/if}
 
-	<ds-field class="ds-field" style="margin-bottom:1.25rem;">
-		<label for="teknologi" class="ds-label">Oppgi databaseteknologi</label>
-		<select class="ds-input">
-			<option value="" disabled selected>Velg DBMS …</option>
-			<option value="everest">PostgreSQL FSS</option>
-			<option value="aconcagua">DB2</option>
-			<option value="denali">Oracle</option>
-		</select>
-	</ds-field>
-
-	<ds-field class="ds-field" style="margin-bottom:1.25rem;">
-		<label for="databasenavn" class="ds-label">Databasenavn</label>
-		<input class="ds-input" type="text" id="databasenavn" />
-	</ds-field>
-
-	<fieldset class="ds-fieldset" style="margin-bottom:1.25rem;">
-		<legend class="ds-label">Velg overførings-tasks for databasen</legend>
-		<!--<p class="ds-paragraph">Utdype mer?</p>-->
-		<ds-field class="ds-field">
-			<input class="ds-input" type="checkbox" name="_R_0_" checked value="okonomi" />
-			<label for="okonomi" class="ds-label" data-weight="regular"
-				>Økonomi- eller hjelpesystem: Overfør endringslogger til GAAL</label
+	<form method="POST" use:enhance>
+		<ds-field class="ds-field" style="margin-bottom:1.25rem;">
+			<label for="naisteam" class="ds-label">Velg hvilket naisteam som får loggene</label>
+			<p class="ds-paragraph">Naisteamet får tilgang til loggene i GAAL og 2 års-log bucket'en.</p>
+			<select
+				class="ds-input"
+				id="naisteam"
+				name="naisteam"
+				required
+				disabled={data.naisteams.length === 0}
 			>
+				<option value="" disabled selected>Velg naisteam …</option>
+				{#each data.naisteams as naisteam (naisteam)}
+					<option value={naisteam}>{naisteam}</option>
+				{/each}
+			</select>
 		</ds-field>
-		<!-- TODO: Arkivlov?
-        <ds-field class="ds-field">
-            <input
-                    class="ds-input"
-                    type="checkbox"
-                    name="_R_0_"
-                    value="arkivlov"
-            />
-            <label for="arkivforskrift" class="ds-label" data-weight="regular">Databasen skal forvaltes som arkiv: Overfør endringslogger (til GAAL, men ingen krav om gjennomgang)</label>
-        </ds-field>
-        -->
-		<!-- TODO: Ikke tillat endringerUtenKrav hvis økonomi eller arkivlov er valgt -->
-		<ds-field class="ds-field">
-			<input class="ds-input" type="checkbox" name="_R_0_" value="endringerUtenKrav" />
-			<label for="endringerUtenKrav" class="ds-label" data-weight="regular"
-				>Endringslogger (DML, DCL og DDL) overføres for databasen, uten at det foreligger lovkrav.</label
-			>
-		</ds-field>
-		<ds-field class="ds-field">
-			<input class="ds-input" type="checkbox" name="_R_0_" value="loggingLeseoperasjoner" />
-			<label for="select" class="ds-label" data-weight="regular"
-				>Overfør SELECT-logger til naisteamets default log bucket</label
-			>
-		</ds-field>
-	</fieldset>
 
-	<div class="ds-alert" data-color="info" style="margin-bottom:var(--ds-size-5);">
-		Pga. en bug i GCP, kan vi ikke sette riktig tid i logTime-feltet når vi overfører loggene fra
-		tidligere i 2026 som er eldre enn 30 dager. Riktig tid for SQL-kjøringen står i råloggene i <a
-			href="https://console.cloud.google.com/logs">GCP Logs Explorer</a
-		>
-		(gå via <a href="https://audit-approval.iap.nav.cloud.nais.io">GAAL</a> for å se i 2 års-log bucket'en).
-	</div>
-	<fieldset class="ds-fieldset" style="margin-bottom:1.5rem;">
-		<legend class="ds-label">Mange logger allerede gjennomgått?</legend>
-		<ds-field class="ds-field">
-			<input class="ds-input" type="checkbox" name="_R_0_" value="quiet" />
-			<label for="quiet" class="ds-label" data-weight="regular"
-				>Overfør manuelt logger fra tidligere i 2026 rett til kald-arkivet ved oppretting, ikke til
-				GAAL</label
-			>
+		<ds-field class="ds-field" style="margin-bottom:1.25rem;">
+			<label for="teknologi" class="ds-label">Oppgi databaseteknologi</label>
+			<select class="ds-input" id="teknologi" name="teknologi" required>
+				<option value="" disabled selected>Velg DBMS …</option>
+				<option value="PostgreSQL">PostgreSQL</option>
+				<option value="DB2">DB2</option>
+			</select>
 		</ds-field>
-	</fieldset>
 
-	<button class="ds-button">Registrer database</button>
+		<ds-field class="ds-field" style="margin-bottom:1.25rem;">
+			<label for="dbname" class="ds-label">Databasenavn</label>
+			<input class="ds-input" type="text" id="dbname" name="dbname" required />
+		</ds-field>
+
+		<fieldset class="ds-fieldset" style="margin-bottom:1.25rem;">
+			<legend class="ds-label">Velg overførings-tasks for databasen</legend>
+			<ds-field class="ds-field">
+				<input class="ds-input" type="checkbox" id="okonomi" name="okonomi" value="true" checked />
+				<label for="okonomi" class="ds-label" data-weight="regular"
+					>Økonomi- eller hjelpesystem: Overfør endringslogger til GAAL</label
+				>
+			</ds-field>
+			<ds-field class="ds-field">
+				<input
+					class="ds-input"
+					type="checkbox"
+					id="endringerUtenKrav"
+					name="endringerUtenKrav"
+					value="true"
+				/>
+				<label for="endringerUtenKrav" class="ds-label" data-weight="regular"
+					>Endringslogger (DML, DCL og DDL) overføres for databasen, uten at det foreligger lovkrav.</label
+				>
+			</ds-field>
+			<ds-field class="ds-field">
+				<input
+					class="ds-input"
+					type="checkbox"
+					id="loggingLeseoperasjoner"
+					name="loggingLeseoperasjoner"
+					value="true"
+				/>
+				<label for="loggingLeseoperasjoner" class="ds-label" data-weight="regular"
+					>Overfør SELECT-logger til naisteamets default log bucket</label
+				>
+			</ds-field>
+		</fieldset>
+
+		<div class="ds-alert" data-color="info" style="margin-bottom:var(--ds-size-5);">
+			Pga. en bug i GCP, kan vi ikke sette riktig tid i logTime-feltet når vi overfører loggene fra
+			tidligere i 2026 som er eldre enn 30 dager. Riktig tid for SQL-kjøringen står i råloggene i <a
+				href="https://console.cloud.google.com/logs">GCP Logs Explorer</a
+			>
+			(gå via <a href="https://audit-approval.iap.nav.cloud.nais.io">GAAL</a> for å se i 2 års-log bucket'en).
+		</div>
+		<fieldset class="ds-fieldset" style="margin-bottom:1.5rem;">
+			<legend class="ds-label">Mange logger allerede gjennomgått?</legend>
+			<ds-field class="ds-field">
+				<input class="ds-input" type="checkbox" id="discardLogs" name="discardLogs" value="true" />
+				<label for="discardLogs" class="ds-label" data-weight="regular"
+					>Overfør manuelt logger fra tidligere i 2026 rett til kald-arkivet ved oppretting, ikke
+					til GAAL</label
+				>
+			</ds-field>
+		</fieldset>
+
+		<button class="ds-button" type="submit" disabled={data.naisteams.length === 0}>
+			Registrer database
+		</button>
+	</form>
 </div>
