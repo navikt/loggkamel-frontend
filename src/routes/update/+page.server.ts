@@ -150,6 +150,10 @@ export const actions: Actions = {
 			return fail(400, { error: 'Velg naisteam som skal få loggene.' });
 		}
 
+		if (formData.has('okonomi') && formData.has('endringerUtenKrav')) {
+			return fail(400, { error: 'Økonomi og endringslogger kan ikke velges samtidig.' });
+		}
+
 		const tasksResult = await getMyTasks(fetch, auth.headers);
 		if (!tasksResult.ok) {
 			return fail(502, { error: tasksResult.error });

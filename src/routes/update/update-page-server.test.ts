@@ -211,4 +211,22 @@ describe('update page load and action', () => {
 			data: { error: 'Kunne ikke oppdatere databasen i Loggkamel. Prøv igjen senere.' }
 		});
 	});
+
+	it('rejects selecting both economic and non-mandatory change logging before fetching tasks', async () => {
+		const fetch = vi.fn<ActionEvent['fetch']>();
+
+		const result = await actions.default(
+			createActionEvent(fetch, 'https://example.test/update?teknologi=POSTGRESQL&dbname=audit-db', {
+				naisteam: 'team-a',
+				okonomi: 'true',
+				endringerUtenKrav: 'true'
+			})
+		);
+
+		expect(fetch).not.toHaveBeenCalled();
+		expect(result).toMatchObject({
+			status: 400,
+			data: { error: 'Økonomi og endringslogger kan ikke velges samtidig.' }
+		});
+	});
 });

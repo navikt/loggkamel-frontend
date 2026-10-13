@@ -77,6 +77,10 @@ export const actions: Actions = {
 		const teknologi = formString(formData, 'teknologi');
 		const dbname = formString(formData, 'dbname');
 
+		if (formData.has('okonomi') && formData.has('endringerUtenKrav')) {
+			return fail(400, { error: 'Økonomi og endringslogger kan ikke velges samtidig.' });
+		}
+
 		if (!naisteam || !dbname || (teknologi !== 'POSTGRESQL' && teknologi !== 'DB2')) {
 			return fail(400, { error: 'Velg naisteam og databaseteknologi, og oppgi databasenavn.' });
 		}

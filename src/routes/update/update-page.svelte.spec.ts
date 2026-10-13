@@ -4,14 +4,14 @@ import { render } from 'vitest-browser-svelte';
 import UpdatePage from './+page.svelte';
 import type { PageData } from './$types';
 
-function pageData(backfill: string): PageData {
+function pageData(backfill: string, okonomi = true, endringerUtenKrav = false): PageData {
 	return {
 		task: {
 			naisteam: 'team-a',
 			teknologi: 'POSTGRESQL',
 			dbname: 'audit-db',
-			okonomi: true,
-			endringerUtenKrav: false,
+			okonomi,
+			endringerUtenKrav,
 			loggingLeseoperasjoner: true,
 			fiksa: false,
 			created: '2026-01-01',
@@ -50,5 +50,29 @@ describe('update page backfill checkbox', () => {
 		await expect
 			.element(page.getByRole('checkbox', { name: /Overfør manuelt logger fra tidligere i 2026/ }))
 			.not.toBeInTheDocument();
+	});
+
+	it('unchecks economic logging when non-mandatory change logging is checked', async () => {
+		render(UpdatePage, { data: pageData('requested'), form: null, params: {} });
+
+		await page.getByRole('checkbox', { name: /Endringslogger \(DML/ }).click();
+
+		await expect
+			.element(page.getByRole('checkbox', { name: /Økonomi- eller hjelpesystem/ }))
+			.not.toBeChecked();
+	});
+
+	it('unchecks non-mandatory change logging when economic logging is checked', async () => {
+		render(UpdatePage, {
+			data: pageData('requested', false, true),
+			form: null,
+			params: {}
+		});
+
+		await page.getByRole('checkbox', { name: /Økonomi- eller hjelpesystem/ }).click();
+
+		await expect
+			.element(page.getByRole('checkbox', { name: /Endringslogger \(DML/ }))
+			.not.toBeChecked();
 	});
 });

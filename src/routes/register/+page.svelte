@@ -3,6 +3,8 @@
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
+	let okonomi = $state(true);
+	let endringerUtenKrav = $state(false);
 </script>
 
 <div class="container small">
@@ -58,7 +60,17 @@
 		<fieldset class="ds-fieldset" style="margin-bottom:1.25rem;">
 			<legend class="ds-label">Velg overførings-tasks for databasen</legend>
 			<ds-field class="ds-field">
-				<input class="ds-input" type="checkbox" id="okonomi" name="okonomi" value="true" checked />
+				<input
+					class="ds-input"
+					type="checkbox"
+					id="okonomi"
+					name="okonomi"
+					value="true"
+					bind:checked={okonomi}
+					onchange={(event) => {
+						if (event.currentTarget.checked) endringerUtenKrav = false;
+					}}
+				/>
 				<label for="okonomi" class="ds-label" data-weight="regular"
 					>Økonomi- eller hjelpesystem: Overfør endringslogger til GAAL</label
 				>
@@ -70,6 +82,10 @@
 					id="endringerUtenKrav"
 					name="endringerUtenKrav"
 					value="true"
+					bind:checked={endringerUtenKrav}
+					onchange={(event) => {
+						if (event.currentTarget.checked) okonomi = false;
+					}}
 				/>
 				<label for="endringerUtenKrav" class="ds-label" data-weight="regular"
 					>Endringslogger (DML, DCL og DDL) overføres for databasen, uten at det foreligger lovkrav.</label

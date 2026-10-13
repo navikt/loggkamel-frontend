@@ -80,7 +80,6 @@ describe('registration page load and action', () => {
 					dbname: 'audit-db',
 					skipBackfill: 'true',
 					okonomi: 'true',
-					endringerUtenKrav: 'true',
 					loggingLeseoperasjoner: 'true'
 				})
 			)
@@ -99,7 +98,7 @@ describe('registration page load and action', () => {
 					dbname: 'audit-db',
 					backfill: 'false',
 					okonomi: true,
-					endringerUtenKrav: true,
+					endringerUtenKrav: false,
 					loggingLeseoperasjoner: true
 				})
 			})
@@ -169,5 +168,28 @@ describe('registration page load and action', () => {
 
 		expect(fetch).not.toHaveBeenCalled();
 		expect(result).toMatchObject({ status: 400 });
+	});
+
+	it('rejects selecting both economic and non-mandatory change logging', async () => {
+		const fetch = vi.fn<ActionEvent['fetch']>();
+
+		const result = await actions.default(
+			createActionEvent(
+				fetch,
+				createFormRequest({
+					naisteam: 'team-a',
+					teknologi: 'POSTGRESQL',
+					dbname: 'audit-db',
+					okonomi: 'true',
+					endringerUtenKrav: 'true'
+				})
+			)
+		);
+
+		expect(fetch).not.toHaveBeenCalled();
+		expect(result).toMatchObject({
+			status: 400,
+			data: { error: 'Økonomi og endringslogger kan ikke velges samtidig.' }
+		});
 	});
 });

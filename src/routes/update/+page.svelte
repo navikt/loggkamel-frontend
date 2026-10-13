@@ -3,6 +3,15 @@
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
+	let okonomi = $state<boolean | null>(null);
+	let endringerUtenKrav = $state<boolean | null>(null);
+
+	$effect(() => {
+		if (data.task) {
+			okonomi = null;
+			endringerUtenKrav = null;
+		}
+	});
 </script>
 
 <div class="container small">
@@ -43,7 +52,11 @@
 						id="okonomi"
 						name="okonomi"
 						value="true"
-						checked={data.task.okonomi}
+						checked={okonomi ?? data.task.okonomi}
+						onchange={(event) => {
+							okonomi = event.currentTarget.checked;
+							if (okonomi) endringerUtenKrav = false;
+						}}
 					/>
 					<label for="okonomi" class="ds-label" data-weight="regular"
 						>Økonomi- eller hjelpesystem: Overfør endringslogger til GAAL</label
@@ -56,7 +69,11 @@
 						id="endringerUtenKrav"
 						name="endringerUtenKrav"
 						value="true"
-						checked={data.task.endringerUtenKrav}
+						checked={endringerUtenKrav ?? data.task.endringerUtenKrav}
+						onchange={(event) => {
+							endringerUtenKrav = event.currentTarget.checked;
+							if (endringerUtenKrav) okonomi = false;
+						}}
 					/>
 					<label for="endringerUtenKrav" class="ds-label" data-weight="regular"
 						>Endringslogger (DML, DCL og DDL) overføres for databasen, uten at det foreligger
