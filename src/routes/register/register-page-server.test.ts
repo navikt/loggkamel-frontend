@@ -78,7 +78,7 @@ describe('registration page load and action', () => {
 					naisteam: 'team-a',
 					teknologi: 'POSTGRESQL',
 					dbname: 'audit-db',
-					discardLogs: 'true',
+					skipBackfill: 'true',
 					okonomi: 'true',
 					endringerUtenKrav: 'true',
 					loggingLeseoperasjoner: 'true'

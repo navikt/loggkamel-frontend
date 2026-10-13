@@ -129,7 +129,7 @@ describe('update page load and action', () => {
 				naisteam: 'team-b',
 				okonomi: 'true',
 				loggingLeseoperasjoner: 'true',
-				...(checkbox ? { discardLogs: checkbox } : {})
+				...(checkbox ? { skipBackfill: checkbox } : {})
 			};
 
 			const result = await actions.default(
@@ -172,7 +172,7 @@ describe('update page load and action', () => {
 		await actions.default(
 			createActionEvent(fetch, 'https://example.test/update?teknologi=POSTGRESQL&dbname=audit-db', {
 				naisteam: 'team-b',
-				discardLogs: 'true'
+				skipBackfill: 'true'
 			})
 		);
 

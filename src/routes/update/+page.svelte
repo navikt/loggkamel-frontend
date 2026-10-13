@@ -91,12 +91,12 @@
 						<input
 							class="ds-input"
 							type="checkbox"
-							id="discardLogs"
-							name="discardLogs"
+							id="skipBackfill"
+							name="skipBackfill"
 							value="true"
 							checked={data.task.backfill === 'false'}
 						/>
-						<label for="discardLogs" class="ds-label" data-weight="regular"
+						<label for="skipBackfill" class="ds-label" data-weight="regular"
 							>Overfør manuelt logger fra tidligere i 2026 rett til kald-arkivet ved oppretting,
 							ikke til GAAL</label
 						>

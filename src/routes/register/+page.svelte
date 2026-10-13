@@ -99,8 +99,14 @@
 		<fieldset class="ds-fieldset" style="margin-bottom:1.5rem;">
 			<legend class="ds-label">Mange logger allerede gjennomgått?</legend>
 			<ds-field class="ds-field">
-				<input class="ds-input" type="checkbox" id="discardLogs" name="discardLogs" value="true" />
-				<label for="discardLogs" class="ds-label" data-weight="regular"
+				<input
+					class="ds-input"
+					type="checkbox"
+					id="skipBackfill"
+					name="skipBackfill"
+					value="true"
+				/>
+				<label for="skipBackfill" class="ds-label" data-weight="regular"
 					>Overfør manuelt logger fra tidligere i 2026 rett til kald-arkivet ved oppretting, ikke
 					til GAAL</label
 				>

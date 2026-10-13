@@ -162,7 +162,7 @@ export const actions: Actions = {
 
 		const backfill =
 			task.backfill === 'false' || task.backfill === 'requested'
-				? formData.has('discardLogs')
+				? formData.has('skipBackfill')
 					? 'false'
 					: 'requested'
 				: task.backfill;
