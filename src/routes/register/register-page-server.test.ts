@@ -96,7 +96,7 @@ describe('registration page load and action', () => {
 					naisteam: 'team-a',
 					teknologi: 'POSTGRESQL',
 					dbname: 'audit-db',
-					backfill: 'requested',
+					backfill: 'false',
 					okonomi: true,
 					endringerUtenKrav: true,
 					loggingLeseoperasjoner: true
@@ -129,7 +129,7 @@ describe('registration page load and action', () => {
 		});
 	});
 
-	it('sets backfill to false when the checkbox is unchecked', async () => {
+	it('sets backfill to requested when the checkbox is unchecked', async () => {
 		const fetch = vi
 			.fn<ActionEvent['fetch']>()
 			.mockResolvedValue(new Response(null, { status: 201 }));
@@ -148,7 +148,7 @@ describe('registration page load and action', () => {
 		const requestOptions = fetch.mock.calls[0][1];
 		expect(JSON.parse(String(requestOptions?.body))).toMatchObject({
 			teknologi: 'DB2',
-			backfill: 'false'
+			backfill: 'requested'
 		});
 	});
 

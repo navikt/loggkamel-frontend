@@ -91,7 +91,7 @@ export const actions: Actions = {
 			naisteam,
 			teknologi,
 			dbname,
-			backfill: formData.has('discardLogs') ? 'requested' : 'false',
+			backfill: formData.has('discardLogs') ? 'false' : 'requested',
 			okonomi: formData.has('okonomi'),
 			endringerUtenKrav: formData.has('endringerUtenKrav'),
 			loggingLeseoperasjoner: formData.has('loggingLeseoperasjoner')
