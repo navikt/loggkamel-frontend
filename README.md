@@ -49,6 +49,14 @@ Kjør Vitest-testene, inkludert `.svelte.spec.ts`-testene i headless Chromium:
 pnpm exec vitest run
 ```
 
+## Kjøre linter
+
+Sjekk formateringen med Prettier:
+
+```sh
+pnpm run lint
+```
+
 New project with SvelteKit:
 
 ```sh

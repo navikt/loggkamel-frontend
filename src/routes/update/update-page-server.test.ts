@@ -100,8 +100,7 @@ describe('update page load and action', () => {
 	});
 
 	it('returns an error if no matching task is found', async () => {
-		const fetch = vi.fn<LoadEvent['fetch']>()
-		.mockResolvedValue(tasksResponse());
+		const fetch = vi.fn<LoadEvent['fetch']>().mockResolvedValue(tasksResponse());
 
 		const result = await load(
 			createLoadEvent(fetch, 'https://example.test/update?teknologi=DB2&dbname=other-db')
