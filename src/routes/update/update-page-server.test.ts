@@ -4,7 +4,8 @@ const { getAuthenticatedHeadersMock } = vi.hoisted(() => ({
 	getAuthenticatedHeadersMock: vi.fn()
 }));
 
-vi.mock('$lib/server/authenticated-headers', () => ({
+vi.mock('$lib/server/authenticated-headers', async (importOriginal) => ({
+	...(await importOriginal<typeof import('$lib/server/authenticated-headers')>()),
 	getAuthenticatedHeaders: getAuthenticatedHeadersMock
 }));
 

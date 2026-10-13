@@ -1,18 +1,13 @@
 import type { PageServerLoad } from './$types';
 import type { TeamTask, TeamsWithTasks } from '$lib/types';
-import { getAuthenticatedHeaders } from '$lib/server/authenticated-headers';
+import { authErrors, getAuthenticatedHeaders } from '$lib/server/authenticated-headers';
 
 const LOGGKAMEL_API_URL = 'https://loggkamel.intern.dev.nav.no/api/v1';
 
 export const load: PageServerLoad = async ({ fetch, request }) => {
 	const auth = await getAuthenticatedHeaders(request);
 	if (!auth.ok) {
-		const errors = {
-			'missing-token': 'Du må være logget inn for å se registrerte databaser.',
-			'invalid-token': 'Innloggingen din er ikke gyldig. Logg inn på nytt.',
-			'obo-token-failed': 'Kunne ikke hente et tilgangstoken for Loggkamel. Prøv igjen senere.'
-		};
-		return { teamTasks: [], error: errors[auth.reason] };
+		return { teamTasks: [], error: authErrors[auth.reason] };
 	}
 
 	try {

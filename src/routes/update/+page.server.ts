@@ -1,15 +1,9 @@
 import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import type { TeamTask, TeamsWithTasks } from '$lib/types';
-import { getAuthenticatedHeaders } from '$lib/server/authenticated-headers';
+import { authErrors, getAuthenticatedHeaders } from '$lib/server/authenticated-headers';
 
 const LOGGKAMEL_API_URL = 'https://loggkamel.intern.dev.nav.no/api/v1';
-
-const authErrors = {
-	'missing-token': 'Du må være logget inn for å oppdatere en database.',
-	'invalid-token': 'Innloggingen din er ikke gyldig. Logg inn på nytt.',
-	'obo-token-failed': 'Kunne ikke hente et tilgangstoken for Loggkamel. Prøv igjen senere.'
-} as const;
 
 type UpdateTask = TeamTask & { backfill: string };
 type TasksResult = { ok: true; tasks: UpdateTask[] } | { ok: false; error: string };

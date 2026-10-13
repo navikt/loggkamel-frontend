@@ -4,7 +4,8 @@ const { getAuthenticatedHeadersMock } = vi.hoisted(() => ({
 	getAuthenticatedHeadersMock: vi.fn()
 }));
 
-vi.mock('$lib/server/authenticated-headers', () => ({
+vi.mock('$lib/server/authenticated-headers', async (importOriginal) => ({
+	...(await importOriginal<typeof import('$lib/server/authenticated-headers')>()),
 	getAuthenticatedHeaders: getAuthenticatedHeadersMock
 }));
 
@@ -22,9 +23,9 @@ describe('landing page load', () => {
 	});
 
 	it.each([
-		['missing-token', 'Du må være logget inn for å se registrerte databaser.'],
+		['missing-token', 'Du må være logget inn for å fortsette.'],
 		['invalid-token', 'Innloggingen din er ikke gyldig. Logg inn på nytt.'],
-		['obo-token-failed', 'Kunne ikke hente et tilgangstoken for Loggkamel. Prøv igjen senere.']
+		['obo-token-failed', 'Kunne ikke hente et tilgangstoken. Prøv igjen senere.']
 	] as const)('returns the appropriate error for %s', async (reason, error) => {
 		const request = new Request('https://example.test');
 		const fetch = vi.fn<LoadEvent['fetch']>();

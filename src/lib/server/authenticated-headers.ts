@@ -6,6 +6,12 @@ type AuthenticatedHeadersResult =
 	| { ok: true; headers: Headers }
 	| { ok: false; reason: 'missing-token' | 'invalid-token' | 'obo-token-failed' };
 
+export const authErrors = {
+	'missing-token': 'Du må være logget inn for å fortsette.',
+	'invalid-token': 'Innloggingen din er ikke gyldig. Logg inn på nytt.',
+	'obo-token-failed': 'Kunne ikke hente et tilgangstoken. Prøv igjen senere.'
+} as const;
+
 export async function getAuthenticatedHeaders(
 	request: Request
 ): Promise<AuthenticatedHeadersResult> {

@@ -1,14 +1,8 @@
 import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { getAuthenticatedHeaders } from '$lib/server/authenticated-headers';
+import { authErrors, getAuthenticatedHeaders } from '$lib/server/authenticated-headers';
 
 const LOGGKAMEL_API_URL = 'https://loggkamel.intern.dev.nav.no/api/v1';
-
-const authErrors = {
-	'missing-token': 'Du må være logget inn for å registrere en database.',
-	'invalid-token': 'Innloggingen din er ikke gyldig. Logg inn på nytt.',
-	'obo-token-failed': 'Kunne ikke hente et tilgangstoken for Loggkamel. Prøv igjen senere.'
-} as const;
 
 type TeamsResult = { ok: true; teams: string[] } | { ok: false; error: string };
 
