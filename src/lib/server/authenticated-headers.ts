@@ -8,7 +8,7 @@ type AuthenticatedHeadersResult =
 
 export const authErrors = {
 	'missing-token': 'Du må være logget inn for å fortsette.',
-	'invalid-token': 'Innloggingen din er ikke gyldig. Logg inn på nytt.',
+	'invalid-token': 'Innloggingen din er ikke gyldig. Last inn siden på nytt.',
 	'obo-token-failed': 'Kunne ikke hente et tilgangstoken. Prøv igjen senere.'
 } as const;
 

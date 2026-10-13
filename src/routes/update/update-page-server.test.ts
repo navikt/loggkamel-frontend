@@ -4,8 +4,12 @@ const { getAuthenticatedHeadersMock } = vi.hoisted(() => ({
 	getAuthenticatedHeadersMock: vi.fn()
 }));
 
-vi.mock('$lib/server/authenticated-headers', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$lib/server/authenticated-headers')>()),
+vi.mock('$lib/server/authenticated-headers', () => ({
+	authErrors: {
+		'missing-token': 'Authentication error',
+		'invalid-token': 'Authentication error',
+		'obo-token-failed': 'Authentication error'
+	},
 	getAuthenticatedHeaders: getAuthenticatedHeadersMock
 }));
 

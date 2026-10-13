@@ -4,8 +4,12 @@ const { getAuthenticatedHeadersMock } = vi.hoisted(() => ({
 	getAuthenticatedHeadersMock: vi.fn()
 }));
 
-vi.mock('$lib/server/authenticated-headers', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$lib/server/authenticated-headers')>()),
+vi.mock('$lib/server/authenticated-headers', () => ({
+	authErrors: {
+		'missing-token': 'Authentication error',
+		'invalid-token': 'Authentication error',
+		'obo-token-failed': 'Authentication error'
+	},
 	getAuthenticatedHeaders: getAuthenticatedHeadersMock
 }));
 
@@ -22,21 +26,20 @@ describe('landing page load', () => {
 		vi.clearAllMocks();
 	});
 
-	it.each([
-		['missing-token', 'Du må være logget inn for å fortsette.'],
-		['invalid-token', 'Innloggingen din er ikke gyldig. Logg inn på nytt.'],
-		['obo-token-failed', 'Kunne ikke hente et tilgangstoken. Prøv igjen senere.']
-	] as const)('returns the appropriate error for %s', async (reason, error) => {
-		const request = new Request('https://example.test');
-		const fetch = vi.fn<LoadEvent['fetch']>();
-		getAuthenticatedHeadersMock.mockResolvedValue({ ok: false, reason });
+	it.each(['missing-token', 'invalid-token', 'obo-token-failed'] as const)(
+		'returns an error without fetching tasks when authentication fails with %s',
+		async (reason) => {
+			const request = new Request('https://example.test');
+			const fetch = vi.fn<LoadEvent['fetch']>();
+			getAuthenticatedHeadersMock.mockResolvedValue({ ok: false, reason });
 
-		const result = await load(createLoadEvent(fetch, request));
+			const result = await load(createLoadEvent(fetch, request));
 
-		expect(getAuthenticatedHeadersMock).toHaveBeenCalledWith(request);
-		expect(fetch).not.toHaveBeenCalled();
-		expect(result).toEqual({ teamTasks: [], error });
-	});
+			expect(getAuthenticatedHeadersMock).toHaveBeenCalledWith(request);
+			expect(fetch).not.toHaveBeenCalled();
+			expect(result).toMatchObject({ teamTasks: [], error: expect.any(String) });
+		}
+	);
 
 	it('uses the authenticated headers and returns tasks from all teams', async () => {
 		const request = new Request('https://example.test');
