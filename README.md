@@ -35,6 +35,28 @@ pnpm run build
 
 You can preview the production build with `pnpm run preview`.
 
+## Kjøre tester lokalt
+
+Installer Chromium, som Vitest bruker for Svelte-komponenttestene:
+
+```sh
+pnpm exec playwright install chromium
+```
+
+Kjør Vitest-testene, inkludert `.svelte.spec.ts`-testene i headless Chromium:
+
+```sh
+pnpm exec vitest run
+```
+
+## Kjøre linter
+
+Sjekk formateringen med Prettier:
+
+```sh
+pnpm run lint
+```
+
 New project with SvelteKit:
 
 ```sh

@@ -1,71 +1,132 @@
 <script lang="ts">
-	import { page } from '$app/state';
+	import { enhance } from '$app/forms';
+	import type { PageProps } from './$types';
 
-	const teknologi = $derived(page.url.searchParams.get('teknologi'));
-	const dbname = $derived(page.url.searchParams.get('dbname'));
+	let { data, form }: PageProps = $props();
+	let okonomi = $state<boolean | null>(null);
+	let endringerUtenKrav = $state<boolean | null>(null);
 
-	const hasSelection = $derived(Boolean(teknologi && dbname));
+	$effect(() => {
+		if (data.task) {
+			okonomi = null;
+			endringerUtenKrav = null;
+		}
+	});
 </script>
 
-<!-- TODO: Get task info from /api/v1/task/mine (or new) and possible teams from /api/v1/naisteam/mine-->
-
 <div class="container small">
-	{#if hasSelection}
+	{#if data.error}
+		<h1 class="ds-heading" data-size="xl" style="margin-bottom:var(--ds-size-4)">Oppdater task</h1>
+		<div class="ds-alert" data-color="danger" role="alert">{data.error}</div>
+	{:else if data.task}
 		<h1 class="ds-heading" data-size="xl" style="margin-bottom:var(--ds-size-4)">
-			Endre {dbname} ({teknologi})
+			Endre {data.task.dbname} ({data.task.teknologi})
 		</h1>
 
-		<!-- fetch task by teknologi + dbname -->
-		<ds-field class="ds-field" style="margin-bottom:1.25rem;">
-			<label for="naisteam" class="ds-label">Endre hvilket naisteam som får loggene</label>
-			<p class="ds-paragraph">Naisteamet får tilgang til loggene i GAAL og 2 års-log bucket'en.</p>
-			<select class="ds-input">
-				<option value="currentTeam" selected="">current-team</option>
-				<!-- TODO -->
-				<option value="everest">Everest</option>
-				<option value="aconcagua">Aconcagua</option>
-				<option value="denali">Denali</option>
-			</select>
-		</ds-field>
+		{#if form?.error}
+			<div class="ds-alert" data-color="danger" role="alert">{form.error}</div>
+		{/if}
+		{#if form?.success}
+			<div class="ds-alert" data-color="success" role="status">Databasen er oppdatert.</div>
+		{/if}
 
-		<!-- TODO: Vis current flags -->
-		<fieldset class="ds-fieldset" style="margin-bottom:1.25rem;">
-			<legend for="tasks" class="ds-label">Endre overførings-tasks for databasen</legend>
-			<!--<p class="ds-paragraph">Utdype mer?</p>-->
-			<ds-field class="ds-field">
-				<input class="ds-input" type="checkbox" name="_R_0_" checked="" value="okonomi" />
-				<label for="okonomi" class="ds-label" data-weight="regular"
-					>Økonomi- eller hjelpesystem: Overfør endringslogger til GAAL</label
-				>
+		<form method="POST" use:enhance>
+			<ds-field class="ds-field" style="margin-bottom:1.25rem;">
+				<label for="naisteam" class="ds-label">Endre hvilket naisteam som får loggene</label>
+				<p class="ds-paragraph">
+					Naisteamet får tilgang til loggene i GAAL og 2 års-log bucket'en.
+				</p>
+				<select class="ds-input" id="naisteam" name="naisteam" required>
+					{#each data.naisteams as naisteam (naisteam)}
+						<option value={naisteam} selected={naisteam === data.task.naisteam}>{naisteam}</option>
+					{/each}
+				</select>
 			</ds-field>
-			<!-- TODO: Arkivlov?
-            <ds-field class="ds-field">
-                <input
-                        class="ds-input"
-                        type="checkbox"
-                        name="_R_0_"
-                        value="arkivlov"
-                />
-                <label for="arkivforskrift" class="ds-label" data-weight="regular">Databasen skal forvaltes som arkiv: Overfør endringslogger (til GAAL, men ingen krav om gjennomgang)</label>
-            </ds-field>
-            -->
-			<ds-field class="ds-field">
-				<input class="ds-input" type="checkbox" name="_R_0_" value="endringerUtenKrav" />
-				<label for="endringerUtenKrav" class="ds-label" data-weight="regular"
-					>Endringslogger (DML, DCL og DDL) overføres for databasen, uten at det foreligger lovkrav.</label
-				>
-			</ds-field>
-			<ds-field class="ds-field">
-				<input class="ds-input" type="checkbox" name="_R_0_" value="loggingLeseoperasjoner" />
-				<label for="select" class="ds-label" data-weight="regular"
-					>Overfør SELECT-logger til naisteamets default log bucket</label
-				>
-			</ds-field>
-		</fieldset>
 
-		<!-- TODO: Skal det være mulig å endre backfill = false til requested? (eneste case som kan endres) -->
+			<fieldset class="ds-fieldset" style="margin-bottom:1.25rem;">
+				<legend class="ds-label">Endre overførings-tasks for databasen</legend>
+				<ds-field class="ds-field">
+					<input
+						class="ds-input"
+						type="checkbox"
+						id="okonomi"
+						name="okonomi"
+						value="true"
+						checked={okonomi ?? data.task.okonomi}
+						onchange={(event) => {
+							okonomi = event.currentTarget.checked;
+							if (okonomi) endringerUtenKrav = false;
+						}}
+					/>
+					<label for="okonomi" class="ds-label" data-weight="regular"
+						>Økonomi- eller hjelpesystem: Overfør endringslogger til GAAL</label
+					>
+				</ds-field>
+				<ds-field class="ds-field">
+					<input
+						class="ds-input"
+						type="checkbox"
+						id="endringerUtenKrav"
+						name="endringerUtenKrav"
+						value="true"
+						checked={endringerUtenKrav ?? data.task.endringerUtenKrav}
+						onchange={(event) => {
+							endringerUtenKrav = event.currentTarget.checked;
+							if (endringerUtenKrav) okonomi = false;
+						}}
+					/>
+					<label for="endringerUtenKrav" class="ds-label" data-weight="regular"
+						>Endringslogger (DML, DCL og DDL) overføres for databasen, uten at det foreligger
+						lovkrav.</label
+					>
+				</ds-field>
+				<ds-field class="ds-field">
+					<input
+						class="ds-input"
+						type="checkbox"
+						id="loggingLeseoperasjoner"
+						name="loggingLeseoperasjoner"
+						value="true"
+						checked={data.task.loggingLeseoperasjoner}
+					/>
+					<label for="loggingLeseoperasjoner" class="ds-label" data-weight="regular"
+						>Overfør SELECT-logger til naisteamets default log bucket</label
+					>
+				</ds-field>
+			</fieldset>
 
-		<button class="ds-button">Oppdater database</button>
+			<div class="ds-alert" data-color="info" style="margin-bottom:var(--ds-size-5);">
+				Pga. en bug i GCP, kan vi ikke sette riktig tid i logTime-feltet når vi overfører loggene
+				fra tidligere i 2026 som er eldre enn 30 dager. Riktig tid for SQL-kjøringen står i
+				råloggene i <a href="https://console.cloud.google.com/logs">GCP Logs Explorer</a>
+				(gå via <a href="https://audit-approval.iap.nav.cloud.nais.io">GAAL</a> for å se i 2 års-log bucket'en).
+			</div>
+			{#if data.task.backfill === 'false' || data.task.backfill === 'requested'}
+				<fieldset class="ds-fieldset" style="margin-bottom:1.5rem;">
+					<legend class="ds-label">Mange logger allerede gjennomgått?</legend>
+					<ds-field class="ds-field">
+						<input
+							class="ds-input"
+							type="checkbox"
+							id="skipBackfill"
+							name="skipBackfill"
+							value="true"
+							checked={data.task.backfill === 'false'}
+						/>
+						<label for="skipBackfill" class="ds-label" data-weight="regular"
+							>Overfør manuelt logger fra tidligere i 2026 rett til kald-arkivet ved oppretting,
+							ikke til GAAL</label
+						>
+					</ds-field>
+				</fieldset>
+			{:else}
+				<p class="ds-paragraph" style="margin-bottom:1.5rem;">Backfill er allerede fullført.</p>
+			{/if}
+
+			<button class="ds-button" type="submit" disabled={data.naisteams.length === 0}>
+				Oppdater database
+			</button>
+		</form>
 	{:else}
 		<h1 class="ds-heading" data-size="xl" style="margin-bottom:var(--ds-size-4)">Oppdater task</h1>
 		<p>

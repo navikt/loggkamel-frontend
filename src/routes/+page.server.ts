@@ -1,33 +1,18 @@
 import type { PageServerLoad } from './$types';
 import type { TeamTask, TeamsWithTasks } from '$lib/types';
-import { getToken, requestAzureOboToken, validateToken } from '@navikt/oasis';
+import { authErrors, getAuthenticatedHeaders } from '$lib/server/authenticated-headers';
 
 const LOGGKAMEL_API_URL = 'https://loggkamel.intern.dev.nav.no/api/v1';
-const LOGGKAMEL_OBO_AUDIENCE = 'api://dev-gcp.sikkerhetstjenesten.loggkamel/.default';
 
 export const load: PageServerLoad = async ({ fetch, request }) => {
-	const token = getToken(request);
-	if (!token) {
-		return { teamTasks: [], error: 'Du må være logget inn for å se registrerte databaser.' };
-	}
-
-	const validation = await validateToken(token);
-	if (!validation.ok) {
-		return { teamTasks: [], error: 'Innloggingen din er ikke gyldig. Logg inn på nytt.' };
-	}
-
-	const oboResult = await requestAzureOboToken(token, LOGGKAMEL_OBO_AUDIENCE);
-	if (!oboResult.ok) {
-		return {
-			teamTasks: [],
-			error: 'Kunne ikke hente et tilgangstoken for Loggkamel. Prøv igjen senere.'
-		};
+	const auth = await getAuthenticatedHeaders(request);
+	if (!auth.ok) {
+		return { teamTasks: [], error: authErrors[auth.reason] };
 	}
 
 	try {
-		const headers = { Authorization: `Bearer ${oboResult.token}` };
 		const response = await fetch(`${LOGGKAMEL_API_URL}/task/mine`, {
-			headers,
+			headers: auth.headers,
 			cache: 'no-store'
 		});
 
