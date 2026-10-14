@@ -19,7 +19,7 @@ export interface TeamsWithTasks {
 }
 
 export interface RerunPull {
-	id: bigint;
+	id: number;
 	dbname: string;
 	teknologi: string;
 	pullStartDate: string;
