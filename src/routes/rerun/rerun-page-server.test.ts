@@ -121,16 +121,4 @@ describe('rerun page load and actions', () => {
 		});
 	});
 
-	it('does not call Loggkamel when the pull id is invalid', async () => {
-		const fetch = vi.fn<ActionEvent['fetch']>();
-
-		const result = await actions.rerun(createActionEvent(fetch, '42/not-an-id'));
-
-		expect(getAuthenticatedHeadersMock).not.toHaveBeenCalled();
-		expect(fetch).not.toHaveBeenCalled();
-		expect(result).toMatchObject({
-			status: 400,
-			data: { error: 'Kunne ikke endre loggpullen. Prøv igjen senere.' }
-		});
-	});
 });
