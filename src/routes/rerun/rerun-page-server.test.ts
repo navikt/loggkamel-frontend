@@ -120,5 +120,4 @@ describe('rerun page load and actions', () => {
 			data: { error: 'Kunne ikke endre loggpullen. Prøv igjen senere.' }
 		});
 	});
-
 });
