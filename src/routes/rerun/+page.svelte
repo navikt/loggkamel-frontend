@@ -1,8 +1,8 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import type { PageProps } from './$types';
-	import CheckmarkCircleIcon from '$lib/assets/CheckmarkCircleIcon.svelte';
 
-	let { data }: PageProps = $props();
+	let { data, form }: PageProps = $props();
 	const rerunPulls = $derived(data.rerunPulls);
 </script>
 
@@ -14,6 +14,17 @@
 	<div class="ds-alert" data-color="info" style="margin-bottom:var(--ds-size-5);">
 		Backenden sjekker om du er i naisteamet Sikkerhetstjenesten, frontenden er lat.
 	</div>
+
+	{#if data.error}
+		<div class="ds-alert" data-color="danger" role="alert">{data.error}</div>
+	{/if}
+	{#if form?.success === 'rerun'}
+		<div class="ds-alert" data-color="success" role="status">Loggpullen er kjørt på nytt.</div>
+	{:else if form?.success === 'resolve'}
+		<div class="ds-alert" data-color="success" role="status">Loggpullen er markert som løst.</div>
+	{:else if form?.error}
+		<div class="ds-alert" data-color="danger" role="alert">{form.error}</div>
+	{/if}
 
 	<table class="ds-table">
 		<caption>Pulls som trengs å rerun</caption>
@@ -33,10 +44,16 @@
 					<td>{pull.dbname}</td>
 					<td>{pull.failureReason}</td>
 					<td>
-						<button class="ds-button">Rerun</button>
+						<form method="POST" action="?/rerun" use:enhance>
+							<input type="hidden" name="id" value={pull.id} />
+							<button class="ds-button" type="submit">Rerun</button>
+						</form>
 					</td>
 					<td>
-						<button class="ds-button">Resolved</button>
+						<form method="POST" action="?/resolve" use:enhance>
+							<input type="hidden" name="id" value={pull.id} />
+							<button class="ds-button" type="submit">Resolved</button>
+						</form>
 					</td>
 				</tr>
 			{/each}

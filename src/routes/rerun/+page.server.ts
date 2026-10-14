@@ -1,35 +1,86 @@
-import type { PageServerLoad } from './$types';
+import { fail } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
 import type { RerunPull } from '$lib/types';
+import { authErrors, getAuthenticatedHeaders } from '$lib/server/authenticated-headers';
 
-export const load: PageServerLoad = async () => {
-	const response = await fetch('https://loggkamel.intern.dev.nav.no/api/v1/pull/rerun-required');
-	console.log(response);
+const LOGGKAMEL_API_URL = 'https://loggkamel.intern.dev.nav.no/api/v1';
+const LOAD_ERROR = 'Kunne ikke hente feilede loggpuller. Prøv igjen senere.';
+const ACTION_ERROR = 'Kunne ikke endre loggpullen. Prøv igjen senere.';
 
-	if (!response.ok) {
-		return { rerunPulls: [] as RerunPull[] };
-		console.log('Not OK, { rerunPulls: [] }');
+type PullAction = 'rerun' | 'resolve';
+
+async function changePull(
+	fetch: typeof globalThis.fetch,
+	request: Request,
+	formData: FormData,
+	action: PullAction
+) {
+	const id = formData.get('id');
+	if (typeof id !== 'string' || !/^\d+$/.test(id)) {
+		return fail(400, { error: ACTION_ERROR });
 	}
 
-	const text = await response.text();
-
-	if (!text) {
-		console.log('Not text');
-		return { rerunPulls: [] as RerunPull[] };
+	const auth = await getAuthenticatedHeaders(request);
+	if (!auth.ok) {
+		return fail(auth.reason === 'obo-token-failed' ? 502 : 401, {
+			error: authErrors[auth.reason]
+		});
 	}
 
 	try {
-		const parsed = JSON.parse(text);
+		const response = await fetch(`${LOGGKAMEL_API_URL}/pull/${action}/${id}`, {
+			method: 'POST',
+			headers: auth.headers,
+			cache: 'no-store'
+		});
 
-		if (!Array.isArray(parsed)) {
-			return { rerunPulls: [] as RerunPull[] };
+		if (!response.ok) {
+			if (response.status === 401) {
+				return fail(401, { error: 'Du må være logget inn for å gjøre denne endringen.' });
+			}
+			if (response.status === 403) {
+				return fail(403, { error: 'Du har ikke tilgang til å gjøre denne endringen.' });
+			}
+			return fail(502, { error: ACTION_ERROR });
+		}
+	} catch (error) {
+		if (error instanceof TypeError) {
+			return fail(502, { error: ACTION_ERROR });
+		}
+		throw error;
+	}
+
+	return { success: action };
+}
+
+export const load: PageServerLoad = async ({ fetch, request }) => {
+	const auth = await getAuthenticatedHeaders(request);
+	if (!auth.ok) {
+		return { rerunPulls: [] as RerunPull[], error: authErrors[auth.reason] };
+	}
+
+	try {
+		const response = await fetch(`${LOGGKAMEL_API_URL}/pull/rerun-required`, {
+			headers: auth.headers,
+			cache: 'no-store'
+		});
+		if (!response.ok) {
+			return { rerunPulls: [] as RerunPull[], error: LOAD_ERROR };
 		}
 
-		const rerunPulls: RerunPull[] = parsed as RerunPull[];
-		return { rerunPulls };
-	} catch {
-		console.error('Unexpected non-JSON response');
-		console.log(text);
-		return { rerunPulls: [] as RerunPull[] };
+		const rerunPulls: RerunPull[] = await response.json();
+		return { rerunPulls, error: null };
+	} catch (error) {
+		if (error instanceof TypeError || error instanceof SyntaxError) {
+			return { rerunPulls: [] as RerunPull[], error: LOAD_ERROR };
+		}
+		throw error;
 	}
-	console.log('Cases done');
+};
+
+export const actions: Actions = {
+	rerun: async ({ fetch, request }) =>
+		changePull(fetch, request, await request.formData(), 'rerun'),
+	resolve: async ({ fetch, request }) =>
+		changePull(fetch, request, await request.formData(), 'resolve')
 };
