@@ -2,8 +2,7 @@ import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import type { TeamTask, TeamsWithTasks } from '$lib/types';
 import { authErrors, getAuthenticatedHeaders } from '$lib/server/authenticated-headers';
-
-const LOGGKAMEL_API_URL = 'https://loggkamel.intern.dev.nav.no/api/v1';
+import { getLoggkamelConfig } from '$lib/server/loggkamel-config';
 
 type UpdateTask = TeamTask & { backfill: string };
 type TasksResult = { ok: true; tasks: UpdateTask[] } | { ok: false; error: string };
@@ -18,7 +17,10 @@ function getTaskSelection(url: URL): { teknologi: string; dbname: string } | nul
 async function getMyTasks(fetch: typeof globalThis.fetch, headers: Headers): Promise<TasksResult> {
 	let response: Response;
 	try {
-		response = await fetch(`${LOGGKAMEL_API_URL}/task/mine`, { headers, cache: 'no-store' });
+		response = await fetch(`${getLoggkamelConfig().apiUrl}/task/mine`, {
+			headers,
+			cache: 'no-store'
+		});
 	} catch (error) {
 		if (error instanceof TypeError) {
 			return { ok: false, error: 'Kunne ikke koble til Loggkamel. Prøv igjen senere.' };
@@ -52,7 +54,10 @@ async function getMyTasks(fetch: typeof globalThis.fetch, headers: Headers): Pro
 async function getMyTeams(fetch: typeof globalThis.fetch, headers: Headers): Promise<TeamsResult> {
 	let response: Response;
 	try {
-		response = await fetch(`${LOGGKAMEL_API_URL}/naisteam/mine`, { headers, cache: 'no-store' });
+		response = await fetch(`${getLoggkamelConfig().apiUrl}/naisteam/mine`, {
+			headers,
+			cache: 'no-store'
+		});
 	} catch (error) {
 		if (error instanceof TypeError) {
 			return { ok: false, error: 'Kunne ikke koble til Loggkamel. Prøv igjen senere.' };
@@ -181,7 +186,7 @@ export const actions: Actions = {
 		};
 
 		try {
-			const response = await fetch(`${LOGGKAMEL_API_URL}/task`, {
+			const response = await fetch(`${getLoggkamelConfig().apiUrl}/task`, {
 				method: 'PUT',
 				headers: auth.headers,
 				body: JSON.stringify(payload),

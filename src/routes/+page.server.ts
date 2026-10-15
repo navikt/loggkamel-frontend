@@ -1,8 +1,7 @@
 import type { PageServerLoad } from './$types';
 import type { TeamTask, TeamsWithTasks } from '$lib/types';
 import { authErrors, getAuthenticatedHeaders } from '$lib/server/authenticated-headers';
-
-const LOGGKAMEL_API_URL = 'https://loggkamel.intern.dev.nav.no/api/v1';
+import { getLoggkamelConfig } from '$lib/server/loggkamel-config';
 
 export const load: PageServerLoad = async ({ fetch, request }) => {
 	const auth = await getAuthenticatedHeaders(request);
@@ -11,7 +10,7 @@ export const load: PageServerLoad = async ({ fetch, request }) => {
 	}
 
 	try {
-		const response = await fetch(`${LOGGKAMEL_API_URL}/task/mine`, {
+		const response = await fetch(`${getLoggkamelConfig().apiUrl}/task/mine`, {
 			headers: auth.headers,
 			cache: 'no-store'
 		});

@@ -1,6 +1,5 @@
 import { getToken, requestAzureOboToken, validateToken } from '@navikt/oasis';
-
-const LOGGKAMEL_OBO_AUDIENCE = 'api://dev-gcp.sikkerhetstjenesten.loggkamel/.default';
+import { getLoggkamelConfig } from '$lib/server/loggkamel-config';
 
 type AuthenticatedHeadersResult =
 	| { ok: true; headers: Headers }
@@ -25,7 +24,7 @@ export async function getAuthenticatedHeaders(
 		return { ok: false, reason: 'invalid-token' };
 	}
 
-	const oboResult = await requestAzureOboToken(token, LOGGKAMEL_OBO_AUDIENCE);
+	const oboResult = await requestAzureOboToken(token, getLoggkamelConfig().oboAudience);
 	if (!oboResult.ok) {
 		return { ok: false, reason: 'obo-token-failed' };
 	}
