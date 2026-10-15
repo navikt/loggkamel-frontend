@@ -2,8 +2,7 @@ import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import type { RerunPull } from '$lib/types';
 import { authErrors, getAuthenticatedHeaders } from '$lib/server/authenticated-headers';
-
-const LOGGKAMEL_API_URL = 'https://loggkamel.intern.dev.nav.no/api/v1';
+import { getLoggkamelConfig } from '$lib/server/loggkamel-config';
 const LOAD_ERROR = 'Kunne ikke hente feilede loggpuller. Prøv igjen senere.';
 const ACTION_ERROR = 'Kunne ikke endre loggpullen. Prøv igjen senere.';
 
@@ -28,7 +27,7 @@ async function changePull(
 	}
 
 	try {
-		const response = await fetch(`${LOGGKAMEL_API_URL}/pull/${action}/${id}`, {
+		const response = await fetch(`${getLoggkamelConfig().apiUrl}/pull/${action}/${id}`, {
 			method: 'POST',
 			headers: auth.headers,
 			cache: 'no-store'
@@ -60,7 +59,7 @@ export const load: PageServerLoad = async ({ fetch, request }) => {
 	}
 
 	try {
-		const response = await fetch(`${LOGGKAMEL_API_URL}/pull/rerun-required`, {
+		const response = await fetch(`${getLoggkamelConfig().apiUrl}/pull/rerun-required`, {
 			headers: auth.headers,
 			cache: 'no-store'
 		});

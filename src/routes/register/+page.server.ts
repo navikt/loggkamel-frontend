@@ -1,15 +1,14 @@
 import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { authErrors, getAuthenticatedHeaders } from '$lib/server/authenticated-headers';
-
-const LOGGKAMEL_API_URL = 'https://loggkamel.intern.dev.nav.no/api/v1';
+import { getLoggkamelConfig } from '$lib/server/loggkamel-config';
 
 type TeamsResult = { ok: true; teams: string[] } | { ok: false; error: string };
 
 async function getMyTeams(fetch: typeof globalThis.fetch, headers: Headers): Promise<TeamsResult> {
 	let response: Response;
 	try {
-		response = await fetch(`${LOGGKAMEL_API_URL}/naisteam/mine`, {
+		response = await fetch(`${getLoggkamelConfig().apiUrl}/naisteam/mine`, {
 			headers,
 			cache: 'no-store'
 		});
@@ -96,7 +95,7 @@ export const actions: Actions = {
 		};
 
 		try {
-			const response = await fetch(`${LOGGKAMEL_API_URL}/task`, {
+			const response = await fetch(`${getLoggkamelConfig().apiUrl}/task`, {
 				method: 'POST',
 				headers: auth.headers,
 				body: JSON.stringify(payload),
