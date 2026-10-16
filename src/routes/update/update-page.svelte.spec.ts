@@ -28,7 +28,7 @@ function pageData(backfill: string, okonomi = true, endringerUtenKrav = false): 
 
 describe('update page backfill checkbox', () => {
 	it('checks the checkbox when backfill is false', async () => {
-		render(UpdatePage, { data: pageData('false'), form: null, params: {} });
+		render(UpdatePage, { data: pageData('cold-storage-requested'), form: null, params: {} });
 
 		await expect
 			.element(page.getByRole('checkbox', { name: /Overfør manuelt logger fra tidligere i 2026/ }))
@@ -36,7 +36,7 @@ describe('update page backfill checkbox', () => {
 	});
 
 	it('leaves the checkbox unchecked when backfill is requested', async () => {
-		render(UpdatePage, { data: pageData('requested'), form: null, params: {} });
+		render(UpdatePage, { data: pageData('backfill-requested'), form: null, params: {} });
 
 		await expect
 			.element(page.getByRole('checkbox', { name: /Overfør manuelt logger fra tidligere i 2026/ }))
@@ -44,16 +44,18 @@ describe('update page backfill checkbox', () => {
 	});
 
 	it('shows completed text instead of the checkbox for other backfill states', async () => {
-		render(UpdatePage, { data: pageData('finished'), form: null, params: {} });
+		render(UpdatePage, { data: pageData('backfill-completed'), form: null, params: {} });
 
-		await expect.element(page.getByText('Backfill er allerede fullført.')).toBeInTheDocument();
+		await expect
+			.element(page.getByText('Backfill eller cold storage er allerede overført.'))
+			.toBeInTheDocument();
 		await expect
 			.element(page.getByRole('checkbox', { name: /Overfør manuelt logger fra tidligere i 2026/ }))
 			.not.toBeInTheDocument();
 	});
 
 	it('unchecks economic logging when non-mandatory change logging is checked', async () => {
-		render(UpdatePage, { data: pageData('requested'), form: null, params: {} });
+		render(UpdatePage, { data: pageData('backfill-requested'), form: null, params: {} });
 
 		await page.getByRole('checkbox', { name: /Endringslogger \(DML/ }).click();
 

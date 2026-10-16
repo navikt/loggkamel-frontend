@@ -32,7 +32,7 @@ const task = {
 	loggingEndringer: true,
 	funnetLogger: false,
 	discardLogs: false,
-	backfill: 'requested'
+	backfill: 'backfill-requested'
 };
 
 function createLoadEvent(fetch: LoadEvent['fetch'], requestUrl: string): LoadEvent {
@@ -119,8 +119,10 @@ describe('update page load and action', () => {
 	});
 
 	it.each([
-		['false', 'true', 'false'],
-		['requested', '', 'requested']
+		['cold-storage-requested', 'true', 'cold-storage-requested'],
+		['backfill-requested', '', 'backfill-requested'],
+		['cold-storage-requested', '', 'backfill-requested'],
+		['backfill-requested', 'true', 'cold-storage-requested']
 	])(
 		'maps the discard checkbox to backfill %s',
 		async (currentBackfill, checkbox, expectedBackfill) => {
@@ -133,7 +135,7 @@ describe('update page load and action', () => {
 				naisteam: 'team-b',
 				okonomi: 'true',
 				loggingLeseoperasjoner: 'true',
-				...(checkbox ? { skipBackfill: checkbox } : {})
+				...(checkbox ? { coldStorageInsteadOfBackfill: checkbox } : {})
 			};
 
 			const result = await actions.default(
@@ -167,7 +169,7 @@ describe('update page load and action', () => {
 	);
 
 	it('preserves backfill when it is no longer changeable', async () => {
-		const completedTask = { ...task, backfill: 'finished' };
+		const completedTask = { ...task, backfill: 'backfill-completed' };
 		const fetch = vi
 			.fn<ActionEvent['fetch']>()
 			.mockResolvedValueOnce(tasksResponse(completedTask))
@@ -176,12 +178,12 @@ describe('update page load and action', () => {
 		await actions.default(
 			createActionEvent(fetch, 'https://example.test/update?teknologi=POSTGRESQL&dbname=audit-db', {
 				naisteam: 'team-b',
-				skipBackfill: 'true'
+				coldStorageInsteadOfBackfill: 'true'
 			})
 		);
 
 		const options = fetch.mock.calls[1][1];
-		expect(JSON.parse(String(options?.body))).toMatchObject({ backfill: 'finished' });
+		expect(JSON.parse(String(options?.body))).toMatchObject({ backfill: 'backfill-completed' });
 	});
 
 	it('does not submit if the URL selection is missing', async () => {

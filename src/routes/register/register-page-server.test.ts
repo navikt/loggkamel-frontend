@@ -82,7 +82,7 @@ describe('registration page load and action', () => {
 					naisteam: 'team-a',
 					teknologi: 'POSTGRESQL',
 					dbname: 'audit-db',
-					skipBackfill: 'true',
+					coldStorageInsteadOfBackfill: 'true',
 					okonomi: 'true',
 					loggingLeseoperasjoner: 'true'
 				})
@@ -100,7 +100,7 @@ describe('registration page load and action', () => {
 					naisteam: 'team-a',
 					teknologi: 'POSTGRESQL',
 					dbname: 'audit-db',
-					backfill: 'false',
+					backfill: 'cold-storage-requested',
 					okonomi: true,
 					endringerUtenKrav: false,
 					loggingLeseoperasjoner: true
@@ -152,7 +152,7 @@ describe('registration page load and action', () => {
 		const requestOptions = fetch.mock.calls[0][1];
 		expect(JSON.parse(String(requestOptions?.body))).toMatchObject({
 			teknologi: 'DB2',
-			backfill: 'requested'
+			backfill: 'backfill-requested'
 		});
 	});
 
