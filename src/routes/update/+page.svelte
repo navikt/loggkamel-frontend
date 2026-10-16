@@ -101,26 +101,28 @@
 				råloggene i <a href="https://console.cloud.google.com/logs">GCP Logs Explorer</a>
 				(gå via <a href="https://audit-approval.iap.nav.cloud.nais.io">GAAL</a> for å se i 2 års-log bucket'en).
 			</div>
-			{#if data.task.backfill === 'false' || data.task.backfill === 'requested'}
+			{#if data.task.backfill === 'cold-storage-requested' || data.task.backfill === 'backfill-requested'}
 				<fieldset class="ds-fieldset" style="margin-bottom:1.5rem;">
 					<legend class="ds-label">Mange logger allerede gjennomgått?</legend>
 					<ds-field class="ds-field">
 						<input
 							class="ds-input"
 							type="checkbox"
-							id="skipBackfill"
-							name="skipBackfill"
+							id="coldStorageInsteadOfBackfill"
+							name="coldStorageInsteadOfBackfill"
 							value="true"
-							checked={data.task.backfill === 'false'}
+							checked={data.task.backfill === 'cold-storage-requested'}
 						/>
-						<label for="skipBackfill" class="ds-label" data-weight="regular"
+						<label for="coldStorageInsteadOfBackfill" class="ds-label" data-weight="regular"
 							>Overfør manuelt logger fra tidligere i 2026 rett til kald-arkivet ved oppretting,
 							ikke til GAAL</label
 						>
 					</ds-field>
 				</fieldset>
 			{:else}
-				<p class="ds-paragraph" style="margin-bottom:1.5rem;">Backfill er allerede fullført.</p>
+				<p class="ds-paragraph" style="margin-bottom:1.5rem;">
+					Backfill eller cold storage er allerede overført.
+				</p>
 			{/if}
 
 			<button class="ds-button" type="submit" disabled={data.naisteams.length === 0}>

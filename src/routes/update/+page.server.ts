@@ -170,10 +170,10 @@ export const actions: Actions = {
 		}
 
 		const backfill =
-			task.backfill === 'false' || task.backfill === 'requested'
-				? formData.has('skipBackfill')
-					? 'false'
-					: 'requested'
+			task.backfill === 'cold-storage-requested' || task.backfill === 'backfill-requested'
+				? formData.has('coldStorageInsteadOfBackfill')
+					? 'cold-storage-requested'
+					: 'backfill-requested'
 				: task.backfill;
 		const payload = {
 			naisteam,

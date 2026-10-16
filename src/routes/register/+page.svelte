@@ -118,11 +118,11 @@
 				<input
 					class="ds-input"
 					type="checkbox"
-					id="skipBackfill"
-					name="skipBackfill"
+					id="coldStorageInsteadOfBackfill"
+					name="coldStorageInsteadOfBackfill"
 					value="true"
 				/>
-				<label for="skipBackfill" class="ds-label" data-weight="regular"
+				<label for="coldStorageInsteadOfBackfill" class="ds-label" data-weight="regular"
 					>Overfør manuelt logger fra tidligere i 2026 rett til kald-arkivet ved oppretting, ikke
 					til GAAL</label
 				>
