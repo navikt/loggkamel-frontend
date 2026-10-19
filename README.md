@@ -21,7 +21,7 @@ Anbefaler pnpm og `pnpm config --global set minimumReleaseAge 4320`, se [Navs se
 Install dependencies with `pnpm install` (or `npm install` or `yarn`). Then start development server:
 
 ```sh
-pnpm run dev
+NAIS_CLUSTER_NAME=dev-gcp pnpm run dev
 
 # or start the server and open the app in a new browser tab
 pnpm run dev --open
@@ -55,11 +55,4 @@ Sjekk formateringen med Prettier:
 
 ```sh
 pnpm run lint
-```
-
-New project with SvelteKit:
-
-```sh
-# create a new project
-npx sv create my-app
 ```
