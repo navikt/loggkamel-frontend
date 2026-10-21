@@ -50,6 +50,7 @@
 						class="ds-input"
 						type="checkbox"
 						id="okonomi"
+						data-testid="okonomi"
 						name="okonomi"
 						value="true"
 						checked={okonomi ?? data.task.okonomi}
@@ -59,7 +60,8 @@
 						}}
 					/>
 					<label for="okonomi" class="ds-label" data-weight="regular"
-						>Økonomi- eller hjelpesystem: Overfør endringslogger til GAAL</label
+						>Databasen er et økonomi- eller hjelpesystem, så overfør endringslogger (DML, DCL og
+						DDL) til GAAL</label
 					>
 				</ds-field>
 				<ds-field class="ds-field">
@@ -67,6 +69,7 @@
 						class="ds-input"
 						type="checkbox"
 						id="endringerUtenKrav"
+						data-testid="endringerUtenKrav"
 						name="endringerUtenKrav"
 						value="true"
 						checked={endringerUtenKrav ?? data.task.endringerUtenKrav}
@@ -76,8 +79,8 @@
 						}}
 					/>
 					<label for="endringerUtenKrav" class="ds-label" data-weight="regular"
-						>Endringslogger (DML, DCL og DDL) overføres for databasen, uten at det foreligger
-						lovkrav.</label
+						>Databasen må <b>ikke</b> følge økonomireglementet/arkivforskrifta, men overfør endringslogger
+						(DML, DCL og DDL) til GAAL</label
 					>
 				</ds-field>
 				<ds-field class="ds-field">
@@ -109,6 +112,7 @@
 							class="ds-input"
 							type="checkbox"
 							id="coldStorageInsteadOfBackfill"
+							data-testid="coldStorageInsteadOfBackfill"
 							name="coldStorageInsteadOfBackfill"
 							value="true"
 							checked={data.task.backfill === 'cold-storage-requested'}
@@ -120,7 +124,7 @@
 					</ds-field>
 				</fieldset>
 			{:else}
-				<p class="ds-paragraph" style="margin-bottom:1.5rem;">
+				<p class="ds-paragraph" data-testid="backfillCompleted" style="margin-bottom:1.5rem;">
 					Backfill eller cold storage er allerede overført.
 				</p>
 			{/if}

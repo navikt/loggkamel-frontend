@@ -64,6 +64,7 @@
 					class="ds-input"
 					type="checkbox"
 					id="okonomi"
+					data-testid="okonomi"
 					name="okonomi"
 					value="true"
 					bind:checked={okonomi}
@@ -81,6 +82,7 @@
 					class="ds-input"
 					type="checkbox"
 					id="endringerUtenKrav"
+					data-testid="endringerUtenKrav"
 					name="endringerUtenKrav"
 					value="true"
 					bind:checked={endringerUtenKrav}

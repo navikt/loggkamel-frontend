@@ -11,11 +11,9 @@ describe('registration page transfer task checkboxes', () => {
 			params: {}
 		});
 
-		await page.getByRole('checkbox', { name: /Endringslogger \(DML/ }).click();
+		await page.getByTestId('endringerUtenKrav').click();
 
-		await expect
-			.element(page.getByRole('checkbox', { name: /Økonomi- eller hjelpesystem/ }))
-			.not.toBeChecked();
+		await expect.element(page.getByTestId('okonomi')).not.toBeChecked();
 	});
 
 	it('unchecks non-mandatory change logging when economic logging is checked', async () => {
@@ -25,13 +23,11 @@ describe('registration page transfer task checkboxes', () => {
 			params: {}
 		});
 
-		const economicCheckbox = page.getByRole('checkbox', { name: /Økonomi- eller hjelpesystem/ });
+		const economicCheckbox = page.getByTestId('okonomi');
 		await economicCheckbox.click();
-		await page.getByRole('checkbox', { name: /Endringslogger \(DML/ }).click();
+		await page.getByTestId('endringerUtenKrav').click();
 		await economicCheckbox.click();
 
-		await expect
-			.element(page.getByRole('checkbox', { name: /Endringslogger \(DML/ }))
-			.not.toBeChecked();
+		await expect.element(page.getByTestId('endringerUtenKrav')).not.toBeChecked();
 	});
 });

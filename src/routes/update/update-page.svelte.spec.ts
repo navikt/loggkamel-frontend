@@ -30,38 +30,28 @@ describe('update page backfill checkbox', () => {
 	it('checks the checkbox when backfill is false', async () => {
 		render(UpdatePage, { data: pageData('cold-storage-requested'), form: null, params: {} });
 
-		await expect
-			.element(page.getByRole('checkbox', { name: /Overfør manuelt logger fra tidligere i 2026/ }))
-			.toBeChecked();
+		await expect.element(page.getByTestId('coldStorageInsteadOfBackfill')).toBeChecked();
 	});
 
 	it('leaves the checkbox unchecked when backfill is requested', async () => {
 		render(UpdatePage, { data: pageData('backfill-requested'), form: null, params: {} });
 
-		await expect
-			.element(page.getByRole('checkbox', { name: /Overfør manuelt logger fra tidligere i 2026/ }))
-			.not.toBeChecked();
+		await expect.element(page.getByTestId('coldStorageInsteadOfBackfill')).not.toBeChecked();
 	});
 
 	it('shows completed text instead of the checkbox for other backfill states', async () => {
 		render(UpdatePage, { data: pageData('backfill-completed'), form: null, params: {} });
 
-		await expect
-			.element(page.getByText('Backfill eller cold storage er allerede overført.'))
-			.toBeInTheDocument();
-		await expect
-			.element(page.getByRole('checkbox', { name: /Overfør manuelt logger fra tidligere i 2026/ }))
-			.not.toBeInTheDocument();
+		await expect.element(page.getByTestId('backfillCompleted')).toBeInTheDocument();
+		await expect.element(page.getByTestId('coldStorageInsteadOfBackfill')).not.toBeInTheDocument();
 	});
 
 	it('unchecks economic logging when non-mandatory change logging is checked', async () => {
 		render(UpdatePage, { data: pageData('backfill-requested'), form: null, params: {} });
 
-		await page.getByRole('checkbox', { name: /Endringslogger \(DML/ }).click();
+		await page.getByTestId('endringerUtenKrav').click();
 
-		await expect
-			.element(page.getByRole('checkbox', { name: /Økonomi- eller hjelpesystem/ }))
-			.not.toBeChecked();
+		await expect.element(page.getByTestId('okonomi')).not.toBeChecked();
 	});
 
 	it('unchecks non-mandatory change logging when economic logging is checked', async () => {
@@ -71,10 +61,8 @@ describe('update page backfill checkbox', () => {
 			params: {}
 		});
 
-		await page.getByRole('checkbox', { name: /Økonomi- eller hjelpesystem/ }).click();
+		await page.getByTestId('okonomi').click();
 
-		await expect
-			.element(page.getByRole('checkbox', { name: /Endringslogger \(DML/ }))
-			.not.toBeChecked();
+		await expect.element(page.getByTestId('endringerUtenKrav')).not.toBeChecked();
 	});
 });
