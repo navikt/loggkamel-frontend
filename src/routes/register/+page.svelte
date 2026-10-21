@@ -72,7 +72,8 @@
 					}}
 				/>
 				<label for="okonomi" class="ds-label" data-weight="regular"
-					>Databasen er et økonomi- eller hjelpesystem, så overfør endringslogger (DML, DCL og DDL) til GAAL</label
+					>Databasen er et økonomi- eller hjelpesystem, så overfør endringslogger (DML, DCL og DDL)
+					til GAAL</label
 				>
 			</ds-field>
 			<ds-field class="ds-field">
@@ -88,7 +89,8 @@
 					}}
 				/>
 				<label for="endringerUtenKrav" class="ds-label" data-weight="regular"
-					>Databasen må <b>ikke</b> følge økonomireglementet/arkivforskrifta, men overfør endringslogger (DML, DCL og DDL) til GAAL</label
+					>Databasen må <b>ikke</b> følge økonomireglementet/arkivforskrifta, men overfør endringslogger
+					(DML, DCL og DDL) til GAAL</label
 				>
 			</ds-field>
 			<ds-field class="ds-field">
