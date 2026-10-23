@@ -1,8 +1,6 @@
 export function isValidDatabaseName(value: unknown): value is string {
 	return (
-		typeof value === 'string' &&
-		value.trim().length > 0 &&
-		!/[\\/\u0000-\u001f\u007f]/.test(value)
+		typeof value === 'string' && value.trim().length > 0 && !/[\\/\u0000-\u001f\u007f]/.test(value)
 	);
 }
 
