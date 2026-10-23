@@ -1,97 +1,36 @@
 <script lang="ts">
 	import { beforeNavigate } from '$app/navigation';
+	import { enhance } from '$app/forms';
+	import type { SubmitFunction } from '@sveltejs/kit';
 	import BackendAccessNotice from '$lib/BackendAccessNotice.svelte';
-	import type { TeamTask, TeamsWithTasks } from '$lib/types';
+	import type { TeamTask } from '$lib/types';
+	import type { PageProps } from './$types';
 
-	function mockTask(
-		naisteam: string,
-		dbname: string,
-		teknologi: string,
-		backfill: string
-	): TeamTask {
-		return {
-			naisteam,
-			dbname,
-			teknologi,
-			backfill,
-			okonomi: true,
-			endringerUtenKrav: false,
-			loggingLeseoperasjoner: false,
-			fiksa: true,
-			created: '2026-10-23T08:00:00Z',
-			updated: '2026-10-23T08:00:00Z',
-			loggingEndringer: true,
-			funnetLogger: true,
-			discardLogs: false
-		};
-	}
-
-	let teams = $state<TeamsWithTasks[]>([
-		{
-			naisteam: 'team-alpha',
-			tasksForTeam: [
-				mockTask('team-alpha', 'alpha-postgres', 'POSTGRESQL', 'backfill-requested'),
-				mockTask('team-alpha', 'alpha-archive', 'POSTGRESQL', 'cold-storage-requested'),
-				mockTask('team-alpha', 'ALPHADB', 'DB2', 'cold-storage-requested')
-			]
-		},
-		{
-			naisteam: 'team-beta',
-			tasksForTeam: [
-				mockTask('team-beta', 'BETADB', 'DB2', 'backfill-requested'),
-				mockTask('team-beta', 'BETAARCH', 'DB2', 'cold-storage-requested'),
-				mockTask('team-beta', 'beta-postgres', 'POSTGRESQL', 'backfill-requested')
-			]
-		}
-	]);
-
-	let pending = $state<{ task: TeamTask; action: 'download' | 'complete' } | null>(null);
-	let feedback = $state<{ color: 'success' | 'danger'; message: string } | null>(null);
-	let simulateFailure = $state(false);
-	const activeTeams = $derived(teams.filter((team) => team.tasksForTeam.length > 0));
+	let { data, form }: PageProps = $props();
+	let pending = $state<TeamTask | null>(null);
+	let downloadNotice = $state<string | null>(null);
+	const activeTeams = $derived(data.teamsWithTasks.filter((team) => team.tasksForTeam.length > 0));
 
 	beforeNavigate(({ cancel }) => {
 		if (pending) cancel();
 	});
 
-	async function simulateAction(task: TeamTask, action: 'download' | 'complete') {
-		if (pending) return;
-		pending = { task, action };
-		feedback = null;
-		const shouldFail = simulateFailure;
-
-		// Delay mock responses so the pending state can be reviewed before API integration.
-		await new Promise<void>((resolve) => setTimeout(resolve, action === 'download' ? 4000 : 600));
-
-		if (shouldFail) {
-			feedback = {
-				color: 'danger',
-				message:
-					action === 'download'
-						? `Could not download files for ${task.dbname}. Please try again. (Simulated error.)`
-						: `Could not mark ${task.dbname} as completed. Please try again. (Simulated error.)`
+	function completeTask(task: TeamTask): SubmitFunction {
+		return ({ cancel }) => {
+			if (pending) {
+				cancel();
+				return;
+			}
+			pending = task;
+			downloadNotice = null;
+			return async ({ update }) => {
+				try {
+					await update();
+				} finally {
+					pending = null;
+				}
 			};
-		} else if (action === 'complete') {
-			teams = teams.map((team) => ({
-				...team,
-				tasksForTeam: team.tasksForTeam.filter(
-					(row) =>
-						row.teknologi !== task.teknologi ||
-						row.dbname !== task.dbname ||
-						row.naisteam !== task.naisteam
-				)
-			}));
-			feedback = {
-				color: 'success',
-				message: `${task.dbname} was marked as completed. (Simulated response.)`
-			};
-		} else {
-			feedback = {
-				color: 'success',
-				message: `Download completed for ${task.dbname}. No files are downloaded in this preview.`
-			};
-		}
-		pending = null;
+		};
 	}
 </script>
 
@@ -104,45 +43,26 @@
 
 	<BackendAccessNotice />
 
-	<details class="ds-details preview-settings">
-		<summary>Mock data preview</summary>
-		<div>
-			<p>
-				All data and responses are simulated. Downloads take four seconds. Completing a task removes
-				it from this preview. Reload the page to reset the data.
-			</p>
-			<label>
-				<input
-					class="ds-input"
-					type="checkbox"
-					bind:checked={simulateFailure}
-					disabled={pending !== null}
-				/>
-				Simulate failed responses
-			</label>
-		</div>
-	</details>
+	{#if data.error}
+		<div class="ds-alert" data-color="danger" role="alert">{data.error}</div>
+	{/if}
 
-	{#if feedback}
-		<div
-			class="ds-alert"
-			data-color={feedback.color}
-			role={feedback.color === 'danger' ? 'alert' : 'status'}
-		>
-			{feedback.message}
-		</div>
+	{#if downloadNotice}
+		<div class="ds-alert" data-color="info" role="status">{downloadNotice}</div>
+	{:else if !pending && form?.error}
+		<div class="ds-alert" data-color="danger" role="alert">{form.error}</div>
+	{:else if !pending && form?.success}
+		<div class="ds-alert" data-color="success" role="status">{form.success}</div>
 	{/if}
 
 	{#if pending}
 		<div class="ds-alert" data-color="info" role="status">
-			{pending.action === 'download'
-				? `Preparing files for ${pending.task.dbname}. This may take a while.`
-				: `Marking ${pending.task.dbname} as completed.`}
-			Please stay on this page until the process finishes. Navigation is paused while it runs.
+			Marking {pending.dbname} as completed. Please stay on this page until the process finishes. Navigation
+			is paused while it runs.
 		</div>
 	{/if}
 
-	{#if activeTeams.length === 0}
+	{#if !data.error && activeTeams.length === 0}
 		<p role="status">No backfill or cold-storage requests remaining.</p>
 	{:else}
 		<div>
@@ -176,58 +96,39 @@
 											<td>
 												<div class="buddy-items">
 													{#if task.teknologi === 'DB2' && task.backfill === 'cold-storage-requested'}
-														<button
+														<a
 															class="ds-button"
-															type="button"
 															data-variant="secondary"
-															disabled={pending !== null}
+															href={`/backfill/download?dbname=${encodeURIComponent(task.dbname)}`}
+															target="_blank"
+															rel="noopener noreferrer"
+															data-sveltekit-reload
+															data-sveltekit-preload-data="off"
 															aria-label={`Download Files for ${task.dbname}`}
-															aria-busy={pending?.task === task && pending.action === 'download'}
-															onclick={() => simulateAction(task, 'download')}
+															onclick={() =>
+																(downloadNotice = `Download requested for ${task.dbname}. Your browser will manage the download. If the request fails, an error will appear in the new tab.`)}
 														>
-															{#if pending?.task === task && pending.action === 'download'}
-																<svg
-																	class="ds-spinner"
-																	data-size="xs"
-																	viewBox="0 0 50 50"
-																	aria-hidden="true"
-																>
-																	<circle
-																		class="ds-spinner__background"
-																		cx="25"
-																		cy="25"
-																		r="20"
-																		fill="none"
-																		stroke-width="5"
-																	/>
-																	<circle
-																		class="ds-spinner__circle"
-																		cx="25"
-																		cy="25"
-																		r="20"
-																		fill="none"
-																		stroke-width="5"
-																	/>
-																</svg>
-																Preparing files...
-															{:else}
-																Download Files
-															{/if}
-														</button>
+															Download Files
+														</a>
 													{/if}
 													{#if task.teknologi === 'POSTGRESQL' || (task.teknologi === 'DB2' && task.backfill === 'cold-storage-requested')}
-														<button
-															class="ds-button"
-															type="button"
-															disabled={pending !== null}
-															aria-label={`Mark ${task.dbname} Completed`}
-															aria-busy={pending?.task === task && pending.action === 'complete'}
-															onclick={() => simulateAction(task, 'complete')}
+														<form
+															method="POST"
+															action="?/complete"
+															use:enhance={completeTask(task)}
 														>
-															{pending?.task === task && pending.action === 'complete'
-																? 'Marking completed...'
-																: 'Mark Completed'}
-														</button>
+															<input type="hidden" name="teknologi" value={task.teknologi} />
+															<input type="hidden" name="dbname" value={task.dbname} />
+															<button
+																class="ds-button"
+																type="submit"
+																disabled={pending !== null}
+																aria-label={`Mark ${task.dbname} Completed`}
+																aria-busy={pending === task}
+															>
+																{pending === task ? 'Marking completed...' : 'Mark Completed'}
+															</button>
+														</form>
 													{:else}
 														<span>No actions available</span>
 													{/if}
@@ -247,8 +148,7 @@
 
 <style>
 	h1,
-	.ds-alert,
-	.preview-settings {
+	.ds-alert {
 		margin-bottom: var(--ds-size-5);
 	}
 
