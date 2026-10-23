@@ -1,19 +1,18 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import BackendAccessNotice from '$lib/BackendAccessNotice.svelte';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
 	const rerunPulls = $derived(data.rerunPulls);
 </script>
 
-<div class="container">
+<div class="container small">
 	<h1 class="ds-heading" data-size="xl" style="margin-bottom:var(--ds-size-5);">
 		Pulls som trengs å rerun
 	</h1>
 
-	<div class="ds-alert" data-color="info" style="margin-bottom:var(--ds-size-5);">
-		Backenden sjekker om du er i naisteamet Sikkerhetstjenesten, frontenden er lat.
-	</div>
+	<BackendAccessNotice />
 
 	{#if data.error}
 		<div class="ds-alert" data-color="danger" role="alert">{data.error}</div>
