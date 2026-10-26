@@ -50,7 +50,7 @@ export const GET: RequestHandler = async ({ fetch, request, url }) => {
 	}
 
 	if (!response.ok) {
-		await response.body?.cancel();
+		await response.body?.cancel().catch(() => {});
 		return downloadError(
 			response.status >= 400 && response.status < 500 ? response.status : 502,
 			backfillError(response.status, DOWNLOAD_ERROR)
