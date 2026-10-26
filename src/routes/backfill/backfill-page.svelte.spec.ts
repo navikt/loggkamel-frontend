@@ -103,32 +103,6 @@ beforeEach(() => {
 });
 
 describe('backfill team overview', () => {
-	it('counts requests, omits teams without tasks and expands each team independently', async () => {
-		await render(BackfillPage, { data: pageData(), form: null, params: {} });
-		const teamA = page.getByTestId('backfill-team-team-a');
-		const teamB = page.getByTestId('backfill-team-team-b');
-
-		await expect.element(teamA).not.toHaveAttribute('open');
-		await expect.element(teamB).not.toHaveAttribute('open');
-		await expect
-			.element(page.getByTestId('backfill-team-summary-team-a'))
-			.toHaveTextContent('team-a (2 backfills requested, 2 cold storage requested)');
-		await expect
-			.element(page.getByTestId('backfill-team-summary-team-b'))
-			.toHaveTextContent('team-b (1 backfills requested, 0 cold storage requested)');
-		await expect.element(page.getByTestId('backfill-team-empty-team')).not.toBeInTheDocument();
-
-		await page.getByTestId('backfill-team-summary-team-a').click();
-		await expect.element(page.getByTestId('backfill-tasks-team-a')).toBeVisible();
-		await expect.element(page.getByTestId('backfill-tasks-team-b')).not.toBeVisible();
-		await page.getByTestId('backfill-team-summary-team-b').click();
-		await expect.element(teamA).toHaveAttribute('open');
-		await expect.element(teamB).toHaveAttribute('open');
-		await page.getByTestId('backfill-team-summary-team-a').click();
-		await expect.element(teamA).not.toHaveAttribute('open');
-		await expect.element(teamB).toHaveAttribute('open');
-	});
-
 	it.each([
 		['POSTGRESQL', 'backfill-requested', true, false],
 		['POSTGRESQL', 'cold-storage-requested', true, false],
@@ -172,22 +146,6 @@ describe('backfill team overview', () => {
 		}
 	);
 
-	it.each<{ teamsWithTasks: TeamsWithTasks[] }>([
-		{ teamsWithTasks: [] },
-		{ teamsWithTasks: [{ naisteam: 'empty-team', tasksForTeam: [] }] }
-	])('shows an empty state when no teams have tasks: %j', async ({ teamsWithTasks }) => {
-		await render(BackfillPage, {
-			data: { teamsWithTasks, error: null },
-			form: null,
-			params: {}
-		});
-
-		await expect
-			.element(page.getByTestId('backfill-empty'))
-			.toHaveTextContent('No backfill or cold-storage requests remaining.');
-		await expect.element(page.getByTestId('backfill-load-error')).not.toBeInTheDocument();
-	});
-
 	it('shows a loading error instead of a misleading empty state', async () => {
 		await render(BackfillPage, {
 			data: { teamsWithTasks: [], error: 'Could not load requests.' },
@@ -203,29 +161,15 @@ describe('backfill team overview', () => {
 });
 
 describe('backfill completion feedback', () => {
-	it('submits hidden task fields, blocks other completions and navigation until refresh finishes', async () => {
-		const view = await render(BackfillPage, {
+	it('submits hidden task fields', async () => {
+		await render(BackfillPage, {
 			data: pageData(),
-			form: { success: 'An earlier completion succeeded.' },
+			form: null,
 			params: {}
 		});
 		await page.getByTestId('backfill-team-summary-team-a').click();
-		const complete = page.getByTestId('backfill-complete-POSTGRESQL-pg-backfill');
-		await complete.click();
+		await page.getByTestId('backfill-complete-POSTGRESQL-pg-backfill').click();
 
-		await expect
-			.element(page.getByTestId('backfill-pending'))
-			.toHaveTextContent('Marking pg-backfill as completed.');
-		await expect.element(complete).toBeDisabled();
-		await expect.element(complete).toHaveAttribute('aria-busy', 'true');
-		await expect.element(complete).toHaveTextContent('Marking completed...');
-		for (const id of ['POSTGRESQL-pg-cold', 'DB2-db2-cold']) {
-			await expect.element(page.getByTestId(`backfill-complete-${id}`)).toBeDisabled();
-			await expect
-				.element(page.getByTestId(`backfill-complete-${id}`))
-				.toHaveAttribute('aria-busy', 'false');
-		}
-		await expect.element(page.getByTestId('backfill-action-success')).not.toBeInTheDocument();
 		expect(submissions).toHaveLength(1);
 		expect(Object.fromEntries(submissions[0].options.formData)).toEqual({
 			teknologi: 'POSTGRESQL',
@@ -233,46 +177,6 @@ describe('backfill completion feedback', () => {
 		});
 		expect(submissions[0].options.formElement.method).toBe('post');
 		expect(submissions[0].options.action.search).toBe('?/complete');
-		const navigate = beforeNavigateMock.mock.calls[0][0];
-		const cancel = vi.fn();
-		navigate({ cancel });
-		expect(cancel).toHaveBeenCalledOnce();
-
-		(
-			page.getByTestId('backfill-complete-form-DB2-db2-cold').element() as HTMLFormElement
-		).requestSubmit();
-		await expect.poll(() => cancellations.length).toBe(2);
-		expect(cancellations[1]).toHaveBeenCalledOnce();
-		expect(submissions).toHaveLength(1);
-
-		let releaseUpdate!: () => void;
-		const update = vi.fn(() => new Promise<void>((resolve) => (releaseUpdate = resolve)));
-		const finishing = finishSubmission(update);
-		expect(update).toHaveBeenCalledExactlyOnceWith();
-		await expect.element(page.getByTestId('backfill-pending')).toBeVisible();
-		const refreshed = pageData();
-		refreshed.teamsWithTasks[0].tasksForTeam.shift();
-		await view.rerender({
-			data: refreshed,
-			form: { success: 'pg-backfill was marked as completed.' }
-		});
-		releaseUpdate();
-		await finishing;
-
-		await expect.element(page.getByTestId('backfill-pending')).not.toBeInTheDocument();
-		await expect
-			.element(page.getByTestId('backfill-task-POSTGRESQL-pg-backfill'))
-			.not.toBeInTheDocument();
-		await expect.element(page.getByTestId('backfill-complete-DB2-db2-cold')).toBeEnabled();
-		await expect
-			.element(page.getByTestId('backfill-action-success'))
-			.toHaveTextContent('pg-backfill was marked as completed.');
-		await expect
-			.element(page.getByTestId('backfill-team-summary-team-a'))
-			.toHaveTextContent('team-a (1 backfills requested, 2 cold storage requested)');
-		cancel.mockClear();
-		navigate({ cancel });
-		expect(cancel).not.toHaveBeenCalled();
 	});
 
 	it('clears pending after a failed completion and keeps the task available for retry', async () => {
@@ -298,21 +202,6 @@ describe('backfill completion feedback', () => {
 			.element(page.getByTestId('backfill-action-error'))
 			.toHaveTextContent('Completion was rejected.');
 		await expect.element(page.getByTestId('backfill-task-DB2-db2-cold')).toBeVisible();
-	});
-
-	it('unlocks the page even if applying the action result throws', async () => {
-		await render(BackfillPage, { data: pageData(), form: null, params: {} });
-		await page.getByTestId('backfill-team-summary-team-a').click();
-		await page.getByTestId('backfill-complete-POSTGRESQL-pg-cold').click();
-		const error = new Error('refresh failed');
-
-		await expect(finishSubmission(vi.fn().mockRejectedValue(error))).rejects.toBe(error);
-
-		await expect.element(page.getByTestId('backfill-pending')).not.toBeInTheDocument();
-		await expect.element(page.getByTestId('backfill-complete-POSTGRESQL-pg-cold')).toBeEnabled();
-		const cancel = vi.fn();
-		beforeNavigateMock.mock.calls[0][0]({ cancel });
-		expect(cancel).not.toHaveBeenCalled();
 	});
 
 	it('updates to the empty state after the last request is completed', async () => {

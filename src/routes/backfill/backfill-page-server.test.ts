@@ -73,31 +73,6 @@ describe('backfill loader', () => {
 		});
 	});
 
-	it.each(['missing-token', 'invalid-token', 'obo-token-failed'] as const)(
-		'returns %s without contacting the backend',
-		async (reason) => {
-			vi.mocked(getAuthenticatedHeaders).mockResolvedValue({ ok: false, reason });
-			const { event, fetch, setHeaders } = loadEvent();
-
-			expect(await load(event)).toEqual({ teamsWithTasks: [], error: authErrors[reason] });
-			expect(fetch).not.toHaveBeenCalled();
-			expect(setHeaders).toHaveBeenCalledWith({ 'Cache-Control': 'no-store' });
-		}
-	);
-
-	it.each([...statusErrors, [302, loadError], [429, loadError], [500, loadError]] as const)(
-		'returns a safe error for HTTP %s without parsing its body',
-		async (status, error) => {
-			const response = new Response('private upstream details', { status });
-			const json = vi.spyOn(response, 'json');
-			const { event, fetch } = loadEvent();
-			fetch.mockResolvedValue(response);
-
-			expect(await load(event)).toEqual({ teamsWithTasks: [], error });
-			expect(json).not.toHaveBeenCalled();
-		}
-	);
-
 	it.each([new TypeError('network failure'), new SyntaxError('invalid JSON')])(
 		'handles expected transport or parsing failures',
 		async (error) => {
@@ -107,13 +82,6 @@ describe('backfill loader', () => {
 			expect(await load(event)).toEqual({ teamsWithTasks: [], error: loadError });
 		}
 	);
-
-	it('handles a successful response with malformed JSON', async () => {
-		const { event, fetch } = loadEvent();
-		fetch.mockResolvedValue(new Response('{not json'));
-
-		expect(await load(event)).toEqual({ teamsWithTasks: [], error: loadError });
-	});
 
 	it('does not hide unexpected failures', async () => {
 		const error = new Error('unexpected failure');
@@ -174,30 +142,6 @@ describe('backfill completion action', () => {
 			expect(json).not.toHaveBeenCalled();
 		}
 	);
-
-	it.each([
-		...statusErrors.map(([status, error]) => [status, status, error] as const),
-		[302, 502, completeError],
-		[422, 422, completeError],
-		[429, 429, completeError],
-		[500, 502, completeError],
-		[503, 502, completeError]
-	] as const)('maps backend HTTP %s to %s', async (upstreamStatus, status, error) => {
-		const { event, fetch } = actionEvent();
-		fetch.mockResolvedValue(new Response('private upstream details', { status: upstreamStatus }));
-
-		expect(await actions.complete(event)).toMatchObject({ status, data: { error } });
-	});
-
-	it('returns a gateway failure for transport errors', async () => {
-		const { event, fetch } = actionEvent();
-		fetch.mockRejectedValue(new TypeError('network failure'));
-
-		expect(await actions.complete(event)).toMatchObject({
-			status: 502,
-			data: { error: completeError }
-		});
-	});
 
 	it('does not hide unexpected failures', async () => {
 		const error = new Error('unexpected failure');

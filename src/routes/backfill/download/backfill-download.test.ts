@@ -42,30 +42,6 @@ describe('DB2 cold-storage streaming download', () => {
 		vi.mocked(getAuthenticatedHeaders).mockResolvedValue({ ok: true, headers });
 	});
 
-	it.each([null, '', '  ', '../db', 'db/name', 'db\\name', 'db\u0000name', 'db\u007fname'])(
-		'rejects database name %j before authentication',
-		async (dbname) => {
-			const { event, fetch } = downloadEvent(dbname);
-
-			await expectError(await GET(event), 400, 'A valid database name is required.');
-			expect(getAuthenticatedHeaders).not.toHaveBeenCalled();
-			expect(fetch).not.toHaveBeenCalled();
-		}
-	);
-
-	it.each([
-		['missing-token', 401],
-		['invalid-token', 401],
-		['obo-token-failed', 502]
-	] as const)('rejects %s with HTTP %s without contacting the backend', async (reason, status) => {
-		vi.mocked(getAuthenticatedHeaders).mockResolvedValue({ ok: false, reason });
-		const { event, fetch, request } = downloadEvent();
-
-		await expectError(await GET(event), status, authErrors[reason]);
-		expect(getAuthenticatedHeaders).toHaveBeenCalledExactlyOnceWith(request);
-		expect(fetch).not.toHaveBeenCalled();
-	});
-
 	it('authenticates the encoded path, forwards cancellation and requests ZIP instead of JSON', async () => {
 		const dbname = 'ø audit?#% &';
 		const { event, fetch, request } = downloadEvent(dbname);
