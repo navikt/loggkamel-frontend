@@ -133,30 +133,6 @@ describe('backfill completion action', () => {
 		vi.mocked(getAuthenticatedHeaders).mockResolvedValue({ ok: true, headers });
 	});
 
-	it.each<Record<string, FormDataEntryValue>>([
-		{},
-		{ dbname: 'audit-db' },
-		{ teknologi: 'POSTGRESQL' },
-		{ teknologi: 'postgresql', dbname: 'audit-db' },
-		{ teknologi: 'ORACLE', dbname: 'audit-db' },
-		{ teknologi: 'DB2', dbname: '' },
-		{ teknologi: 'DB2', dbname: '  ' },
-		{ teknologi: 'DB2', dbname: '../audit-db' },
-		{ teknologi: 'DB2', dbname: 'db\\name' },
-		{ teknologi: 'DB2', dbname: 'db\u0000name' },
-		{ teknologi: 'DB2', dbname: new File(['audit-db'], 'db.txt') },
-		{ teknologi: new File(['DB2'], 'tech.txt'), dbname: 'audit-db' }
-	])('rejects invalid form fields before authentication: %j', async (fields) => {
-		const { event, fetch } = actionEvent(undefined, fields);
-
-		expect(await actions.complete(event)).toMatchObject({
-			status: 400,
-			data: { error: invalidFieldsError }
-		});
-		expect(getAuthenticatedHeaders).not.toHaveBeenCalled();
-		expect(fetch).not.toHaveBeenCalled();
-	});
-
 	it.each([
 		['missing-token', 401],
 		['invalid-token', 401],

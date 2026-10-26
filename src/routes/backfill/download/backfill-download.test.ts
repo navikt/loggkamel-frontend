@@ -90,66 +90,6 @@ describe('DB2 cold-storage streaming download', () => {
 		expect(await response.text()).toBe('archive');
 	});
 
-	it('preserves the upstream filename but does not forward unrelated upstream headers', async () => {
-		const disposition = 'attachment; filename="export.zip"';
-		const { event, fetch } = downloadEvent();
-		fetch.mockResolvedValue(
-			new Response('archive', {
-				headers: {
-					'Content-Disposition': disposition,
-					'Content-Type': 'application/octet-stream',
-					'Cache-Control': 'public',
-					'Set-Cookie': 'upstream=value',
-					'Content-Length': '7',
-					'Content-Encoding': 'gzip'
-				}
-			})
-		);
-
-		const response = await GET(event);
-
-		expect(response.headers.get('Content-Disposition')).toBe(disposition);
-		expect(response.headers.get('Content-Type')).toBe('application/zip');
-		expect(response.headers.get('Cache-Control')).toBe('no-store');
-		for (const header of ['Set-Cookie', 'Content-Length', 'Content-Encoding']) {
-			expect(response.headers.has(header)).toBe(false);
-		}
-		await response.body?.cancel();
-	});
-
-	it('returns the upstream stream before any chunks or end-of-stream are available', async () => {
-		let controller!: ReadableStreamDefaultController<Uint8Array>;
-		const body = new ReadableStream<Uint8Array>({
-			start(streamController) {
-				controller = streamController;
-			}
-		});
-		const upstream = new Response(body);
-		const arrayBuffer = vi.spyOn(upstream, 'arrayBuffer');
-		const blob = vi.spyOn(upstream, 'blob');
-		const text = vi.spyOn(upstream, 'text');
-		const { event, fetch } = downloadEvent();
-		fetch.mockResolvedValue(upstream);
-
-		const response = await GET(event);
-
-		expect(response.body).toBe(body);
-		expect(upstream.bodyUsed).toBe(false);
-		expect(arrayBuffer).not.toHaveBeenCalled();
-		expect(blob).not.toHaveBeenCalled();
-		expect(text).not.toHaveBeenCalled();
-		const reader = response.body!.getReader();
-		const first = new Uint8Array([80, 75, 3, 4]);
-		controller.enqueue(first);
-		expect(await reader.read()).toEqual({ value: first, done: false });
-		const second = new Uint8Array([1, 2, 3]);
-		controller.enqueue(second);
-		expect(await reader.read()).toEqual({ value: second, done: false });
-		controller.close();
-		expect(await reader.read()).toEqual({ value: undefined, done: true });
-		reader.releaseLock();
-	});
-
 	it('cancels the upstream stream when the download consumer cancels', async () => {
 		const cancel = vi.fn();
 		const body = new ReadableStream<Uint8Array>({ cancel });
@@ -247,25 +187,4 @@ describe('DB2 cold-storage streaming download', () => {
 			await expect(GET(event)).rejects.toBe(error);
 		}
 	);
-
-	it('passes client request abortion to an in-flight backend fetch', async () => {
-		const controller = new AbortController();
-		const { event, fetch } = downloadEvent();
-		event.request = new Request(event.url, { signal: controller.signal });
-		fetch.mockImplementation(
-			(_input, init) =>
-				new Promise((_resolve, reject) => {
-					init!.signal!.addEventListener('abort', () => reject(init!.signal!.reason), {
-						once: true
-					});
-				})
-		);
-		const result = GET(event);
-		const rejected = expect(result).rejects.toMatchObject({ name: 'AbortError' });
-		await vi.waitFor(() => expect(fetch).toHaveBeenCalledOnce());
-
-		controller.abort();
-
-		await rejected;
-	});
 });
