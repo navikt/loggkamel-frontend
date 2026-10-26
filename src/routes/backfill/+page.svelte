@@ -7,7 +7,7 @@
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
-	let pending = $state<TeamTask | null>(null);
+	let pending = $state.raw<TeamTask | null>(null);
 	let downloadNotice = $state<string | null>(null);
 	const activeTeams = $derived(data.teamsWithTasks.filter((team) => team.tasksForTeam.length > 0));
 
@@ -44,31 +44,41 @@
 	<BackendAccessNotice />
 
 	{#if data.error}
-		<div class="ds-alert" data-color="danger" role="alert">{data.error}</div>
+		<div class="ds-alert" data-color="danger" role="alert" data-testid="backfill-load-error">
+			{data.error}
+		</div>
 	{/if}
 
 	{#if downloadNotice}
-		<div class="ds-alert" data-color="info" role="status">{downloadNotice}</div>
+		<div class="ds-alert" data-color="info" role="status" data-testid="backfill-download-notice">
+			{downloadNotice}
+		</div>
 	{:else if !pending && form?.error}
-		<div class="ds-alert" data-color="danger" role="alert">{form.error}</div>
+		<div class="ds-alert" data-color="danger" role="alert" data-testid="backfill-action-error">
+			{form.error}
+		</div>
 	{:else if !pending && form?.success}
-		<div class="ds-alert" data-color="success" role="status">{form.success}</div>
+		<div class="ds-alert" data-color="success" role="status" data-testid="backfill-action-success">
+			{form.success}
+		</div>
 	{/if}
 
 	{#if pending}
-		<div class="ds-alert" data-color="info" role="status">
+		<div class="ds-alert" data-color="info" role="status" data-testid="backfill-pending">
 			Marking {pending.dbname} as completed. Please stay on this page until the process finishes. Navigation
 			is paused while it runs.
 		</div>
 	{/if}
 
 	{#if !data.error && activeTeams.length === 0}
-		<p role="status">No backfill or cold-storage requests remaining.</p>
+		<p role="status" data-testid="backfill-empty">
+			No backfill or cold-storage requests remaining.
+		</p>
 	{:else}
 		<div>
 			{#each activeTeams as team (team.naisteam)}
-				<details class="ds-details">
-					<summary>
+				<details class="ds-details" data-testid={`backfill-team-${team.naisteam}`}>
+					<summary data-testid={`backfill-team-summary-${team.naisteam}`}>
 						{team.naisteam}
 						({team.tasksForTeam.filter((task) => task.backfill === 'backfill-requested').length}
 						backfills requested,
@@ -77,7 +87,7 @@
 					</summary>
 					<div>
 						<div class="table-scroll">
-							<table class="ds-table">
+							<table class="ds-table" data-testid={`backfill-tasks-${team.naisteam}`}>
 								<caption>Active requests for {team.naisteam}</caption>
 								<thead>
 									<tr>
@@ -89,7 +99,7 @@
 								</thead>
 								<tbody>
 									{#each team.tasksForTeam as task (`${task.teknologi}-${task.dbname}`)}
-										<tr>
+										<tr data-testid={`backfill-task-${task.teknologi}-${task.dbname}`}>
 											<td>{task.teknologi}</td>
 											<td>{task.dbname}</td>
 											<td>{task.backfill}</td>
@@ -97,6 +107,7 @@
 												<div class="buddy-items">
 													{#if task.teknologi === 'DB2' && task.backfill === 'cold-storage-requested'}
 														<a
+															data-testid={`backfill-download-${task.teknologi}-${task.dbname}`}
 															class="ds-button"
 															data-variant="secondary"
 															href={`/backfill/download?dbname=${encodeURIComponent(task.dbname)}`}
@@ -113,6 +124,7 @@
 													{/if}
 													{#if task.teknologi === 'POSTGRESQL' || (task.teknologi === 'DB2' && task.backfill === 'cold-storage-requested')}
 														<form
+															data-testid={`backfill-complete-form-${task.teknologi}-${task.dbname}`}
 															method="POST"
 															action="?/complete"
 															use:enhance={completeTask(task)}
@@ -120,6 +132,7 @@
 															<input type="hidden" name="teknologi" value={task.teknologi} />
 															<input type="hidden" name="dbname" value={task.dbname} />
 															<button
+																data-testid={`backfill-complete-${task.teknologi}-${task.dbname}`}
 																class="ds-button"
 																type="submit"
 																disabled={pending !== null}
@@ -130,7 +143,10 @@
 															</button>
 														</form>
 													{:else}
-														<span>No actions available</span>
+														<span
+															data-testid={`backfill-no-actions-${task.teknologi}-${task.dbname}`}
+															>No actions available</span
+														>
 													{/if}
 												</div>
 											</td>
