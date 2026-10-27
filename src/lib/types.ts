@@ -11,6 +11,7 @@ export interface TeamTask {
 	loggingEndringer: boolean;
 	funnetLogger: boolean;
 	discardLogs: boolean;
+	backfill: string;
 }
 
 export interface TeamsWithTasks {
