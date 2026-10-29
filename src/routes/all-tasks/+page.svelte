@@ -35,7 +35,6 @@
 		Alle registrerte databaser
 	</h1>
 
-
 	<div style="margin-bottom: 3rem;">
 		{#each teamsWithTasks as naisTeam (naisTeam.naisteam)}
 			<details class="ds-details">

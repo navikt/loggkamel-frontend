@@ -148,8 +148,7 @@
 	</h2>
 	<p>
 		<span class="ds-tag" style="margin-right: 0.5rem;">Økonomi</span>
-		Databasen er et økonomi- eller hjelpesystem. Lagres i
-		11 år.
+		Databasen er et økonomi- eller hjelpesystem. Lagres i 11 år.
 	</p>
 	<p>
 		<span class="ds-tag" style="margin-right: 0.5rem;">Arkivlov</span>
