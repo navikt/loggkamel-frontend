@@ -4,11 +4,13 @@
 
 	let { data, form }: PageProps = $props();
 	let okonomi = $state<boolean | null>(null);
+	let arkivforskrift = $state<boolean | null>(null);
 	let endringerUtenKrav = $state<boolean | null>(null);
 
 	$effect(() => {
 		if (data.task) {
 			okonomi = null;
+			arkivforskrift = null;
 			endringerUtenKrav = null;
 		}
 	});
@@ -68,6 +70,25 @@
 					<input
 						class="ds-input"
 						type="checkbox"
+						id="arkivforskrift"
+						data-testid="arkivforskrift"
+						name="arkivforskrift"
+						value="true"
+						checked={arkivforskrift ?? data.task.arkivforskrift}
+						onchange={(event) => {
+							arkivforskrift = event.currentTarget.checked;
+							if (arkivforskrift) endringerUtenKrav = false;
+						}}
+					/>
+					<label for="arkivforskrift" class="ds-label" data-weight="regular"
+						>Databasen skal forvaltes som arkiv etter arkivforskrifta § 5, så overfør endringslogger
+						(DML, DCL og DDL) til GAAL</label
+					>
+				</ds-field>
+				<ds-field class="ds-field">
+					<input
+						class="ds-input"
+						type="checkbox"
 						id="endringerUtenKrav"
 						data-testid="endringerUtenKrav"
 						name="endringerUtenKrav"
@@ -75,7 +96,10 @@
 						checked={endringerUtenKrav ?? data.task.endringerUtenKrav}
 						onchange={(event) => {
 							endringerUtenKrav = event.currentTarget.checked;
-							if (endringerUtenKrav) okonomi = false;
+							if (endringerUtenKrav) {
+								okonomi = false;
+								arkivforskrift = false;
+							}
 						}}
 					/>
 					<label for="endringerUtenKrav" class="ds-label" data-weight="regular"

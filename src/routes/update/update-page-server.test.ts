@@ -24,6 +24,7 @@ const task = {
 	teknologi: 'POSTGRESQL',
 	dbname: 'audit-db',
 	okonomi: true,
+	arkivforskrift: false,
 	endringerUtenKrav: false,
 	loggingLeseoperasjoner: true,
 	fiksa: false,
@@ -159,6 +160,7 @@ describe('update page load and action', () => {
 						dbname: 'audit-db',
 						backfill: expectedBackfill,
 						okonomi: true,
+						arkivforskrift: false,
 						endringerUtenKrav: false,
 						loggingLeseoperasjoner: true
 					})
@@ -218,21 +220,70 @@ describe('update page load and action', () => {
 		});
 	});
 
-	it('rejects selecting both economic and non-mandatory change logging before fetching tasks', async () => {
-		const fetch = vi.fn<ActionEvent['fetch']>();
+	it.each<Record<string, string>>([
+		{ okonomi: 'true' },
+		{ arkivforskrift: 'true' },
+		{ okonomi: 'true', arkivforskrift: 'true' }
+	])(
+		'rejects non-mandatory change logging combined with %j before fetching tasks',
+		async (reasons) => {
+			const fetch = vi.fn<ActionEvent['fetch']>();
 
-		const result = await actions.default(
-			createActionEvent(fetch, 'https://example.test/update?teknologi=POSTGRESQL&dbname=audit-db', {
-				naisteam: 'team-a',
-				okonomi: 'true',
-				endringerUtenKrav: 'true'
-			})
-		);
+			const result = await actions.default(
+				createActionEvent(
+					fetch,
+					'https://example.test/update?teknologi=POSTGRESQL&dbname=audit-db',
+					{
+						naisteam: 'team-a',
+						...reasons,
+						endringerUtenKrav: 'true'
+					}
+				)
+			);
 
-		expect(fetch).not.toHaveBeenCalled();
-		expect(result).toMatchObject({
-			status: 400,
-			data: { error: 'Økonomi og endringslogger kan ikke velges samtidig.' }
-		});
-	});
+			expect(fetch).not.toHaveBeenCalled();
+			expect(result).toMatchObject({
+				status: 400,
+				data: {
+					error:
+						'Endringslogger uten lovkrav kan ikke velges sammen med økonomi eller arkivforskrift.'
+				}
+			});
+		}
+	);
+
+	it.each([
+		[false, false, false],
+		[true, false, false],
+		[false, true, false],
+		[true, true, false],
+		[false, false, true]
+	])(
+		'updates a task with logging reasons %s / %s / %s',
+		async (okonomi, arkivforskrift, endringerUtenKrav) => {
+			const fetch = vi
+				.fn<ActionEvent['fetch']>()
+				.mockResolvedValueOnce(tasksResponse())
+				.mockResolvedValueOnce(new Response(null, { status: 200 }));
+			const fields: Record<string, string> = { naisteam: 'team-a' };
+			if (okonomi) fields.okonomi = 'true';
+			if (arkivforskrift) fields.arkivforskrift = 'true';
+			if (endringerUtenKrav) fields.endringerUtenKrav = 'true';
+
+			const result = await actions.default(
+				createActionEvent(
+					fetch,
+					'https://example.test/update?teknologi=POSTGRESQL&dbname=audit-db',
+					fields
+				)
+			);
+
+			expect(result).toEqual({ success: true });
+			expect(JSON.parse(String(fetch.mock.calls[1][1]?.body))).toMatchObject({
+				okonomi,
+				arkivforskrift,
+				endringerUtenKrav
+			});
+		}
+	);
 });

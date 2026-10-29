@@ -102,6 +102,7 @@ describe('registration page load and action', () => {
 					dbname: 'audit-db',
 					backfill: 'cold-storage-requested',
 					okonomi: true,
+					arkivforskrift: false,
 					endringerUtenKrav: false,
 					loggingLeseoperasjoner: true
 				})
@@ -174,7 +175,11 @@ describe('registration page load and action', () => {
 		expect(result).toMatchObject({ status: 400 });
 	});
 
-	it('rejects selecting both economic and non-mandatory change logging', async () => {
+	it.each<Record<string, string>>([
+		{ okonomi: 'true' },
+		{ arkivforskrift: 'true' },
+		{ okonomi: 'true', arkivforskrift: 'true' }
+	])('rejects non-mandatory change logging combined with %j', async (reasons) => {
 		const fetch = vi.fn<ActionEvent['fetch']>();
 
 		const result = await actions.default(
@@ -184,7 +189,7 @@ describe('registration page load and action', () => {
 					naisteam: 'team-a',
 					teknologi: 'POSTGRESQL',
 					dbname: 'audit-db',
-					okonomi: 'true',
+					...reasons,
 					endringerUtenKrav: 'true'
 				})
 			)
@@ -193,7 +198,42 @@ describe('registration page load and action', () => {
 		expect(fetch).not.toHaveBeenCalled();
 		expect(result).toMatchObject({
 			status: 400,
-			data: { error: 'Økonomi og endringslogger kan ikke velges samtidig.' }
+			data: {
+				error:
+					'Endringslogger uten lovkrav kan ikke velges sammen med økonomi eller arkivforskrift.'
+			}
 		});
 	});
+
+	it.each([
+		[false, false, false],
+		[true, false, false],
+		[false, true, false],
+		[true, true, false],
+		[false, false, true]
+	])(
+		'creates a task with logging reasons %s / %s / %s',
+		async (okonomi, arkivforskrift, endringerUtenKrav) => {
+			const fetch = vi
+				.fn<ActionEvent['fetch']>()
+				.mockResolvedValue(new Response(null, { status: 201 }));
+			const fields: Record<string, string> = {
+				naisteam: 'team-a',
+				teknologi: 'POSTGRESQL',
+				dbname: 'audit-db'
+			};
+			if (okonomi) fields.okonomi = 'true';
+			if (arkivforskrift) fields.arkivforskrift = 'true';
+			if (endringerUtenKrav) fields.endringerUtenKrav = 'true';
+
+			const result = await actions.default(createActionEvent(fetch, createFormRequest(fields)));
+
+			expect(result).toEqual({ success: true });
+			expect(JSON.parse(String(fetch.mock.calls[0][1]?.body))).toMatchObject({
+				okonomi,
+				arkivforskrift,
+				endringerUtenKrav
+			});
+		}
+	);
 });

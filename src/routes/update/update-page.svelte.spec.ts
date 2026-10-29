@@ -4,13 +4,19 @@ import { render } from 'vitest-browser-svelte';
 import UpdatePage from './+page.svelte';
 import type { PageData } from './$types';
 
-function pageData(backfill: string, okonomi = true, endringerUtenKrav = false): PageData {
+function pageData(
+	backfill: string,
+	okonomi = true,
+	endringerUtenKrav = false,
+	arkivforskrift = false
+): PageData {
 	return {
 		task: {
 			naisteam: 'team-a',
 			teknologi: 'POSTGRESQL',
 			dbname: 'audit-db',
 			okonomi,
+			arkivforskrift,
 			endringerUtenKrav,
 			loggingLeseoperasjoner: true,
 			fiksa: false,
@@ -46,23 +52,59 @@ describe('update page backfill checkbox', () => {
 		await expect.element(page.getByTestId('coldStorageInsteadOfBackfill')).not.toBeInTheDocument();
 	});
 
-	it('unchecks economic logging when non-mandatory change logging is checked', async () => {
-		render(UpdatePage, { data: pageData('backfill-requested'), form: null, params: {} });
-
-		await page.getByTestId('endringerUtenKrav').click();
-
-		await expect.element(page.getByTestId('okonomi')).not.toBeChecked();
-	});
-
-	it('unchecks non-mandatory change logging when economic logging is checked', async () => {
+	it('unchecks both mandatory reasons when non-mandatory change logging is checked', async () => {
 		render(UpdatePage, {
-			data: pageData('requested', false, true),
+			data: pageData('backfill-requested', true, false, true),
 			form: null,
 			params: {}
 		});
 
-		await page.getByTestId('okonomi').click();
+		await expect.element(page.getByTestId('okonomi')).toBeChecked();
+		await expect.element(page.getByTestId('arkivforskrift')).toBeChecked();
 
-		await expect.element(page.getByTestId('endringerUtenKrav')).not.toBeChecked();
+		await page.getByTestId('endringerUtenKrav').click();
+
+		await expect.element(page.getByTestId('okonomi')).not.toBeChecked();
+		await expect.element(page.getByTestId('arkivforskrift')).not.toBeChecked();
+		await expect.element(page.getByTestId('endringerUtenKrav')).toBeChecked();
+	});
+
+	it.each(['okonomi', 'arkivforskrift'])(
+		'unchecks non-mandatory change logging when %s is checked',
+		async (reason) => {
+			render(UpdatePage, {
+				data: pageData('requested', false, true),
+				form: null,
+				params: {}
+			});
+
+			await page.getByTestId(reason).click();
+
+			await expect.element(page.getByTestId('endringerUtenKrav')).not.toBeChecked();
+			await expect.element(page.getByTestId(reason)).toBeChecked();
+		}
+	);
+
+	it('allows both mandatory reasons to be selected', async () => {
+		render(UpdatePage, { data: pageData('backfill-requested'), form: null, params: {} });
+
+		await page.getByTestId('arkivforskrift').click();
+
+		await expect.element(page.getByTestId('okonomi')).toBeChecked();
+		await expect.element(page.getByTestId('arkivforskrift')).toBeChecked();
+	});
+
+	it('resets the archive checkbox when refreshed task data arrives', async () => {
+		const view = await render(UpdatePage, {
+			data: pageData('backfill-requested', false, false, true),
+			form: null,
+			params: {}
+		});
+		await expect.element(page.getByTestId('arkivforskrift')).toBeChecked();
+		await page.getByTestId('arkivforskrift').click();
+
+		await view.rerender({ data: pageData('backfill-requested', false, false, true) });
+
+		await expect.element(page.getByTestId('arkivforskrift')).toBeChecked();
 	});
 });

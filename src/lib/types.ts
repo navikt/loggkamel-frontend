@@ -3,6 +3,7 @@ export interface TeamTask {
 	teknologi: string;
 	dbname: string;
 	okonomi: boolean;
+	arkivforskrift: boolean;
 	endringerUtenKrav: boolean;
 	loggingLeseoperasjoner: boolean;
 	fiksa: boolean;

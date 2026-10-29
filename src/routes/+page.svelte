@@ -89,13 +89,16 @@
 						<td>{row.naisteam}</td>
 						<td>{row.teknologi}</td>
 						<td>{row.dbname}</td>
-						<!-- TODO: find out whether to add arkivlov & if so, add to backend too -->
 						<td>
 							{#if row.okonomi}
 								<span class="ds-tag">Økonomi</span>
 							{/if}
 
-							{#if row.endringerUtenKrav && !row.okonomi}
+							{#if row.arkivforskrift}
+								<span class="ds-tag">Arkivlov</span>
+							{/if}
+
+							{#if row.okonomi || row.arkivforskrift || row.endringerUtenKrav}
 								<span class="ds-tag">endringer</span>
 							{/if}
 
@@ -103,7 +106,7 @@
 								<span class="ds-tag" data-color="success">read</span>
 							{/if}
 
-							{#if !row.okonomi && !row.endringerUtenKrav && !row.loggingLeseoperasjoner}
+							{#if !row.okonomi && !row.arkivforskrift && !row.endringerUtenKrav && !row.loggingLeseoperasjoner}
 								<span class="ds-tag" data-variant="default" data-color="neutral">ingen</span>
 							{/if}
 						</td>
@@ -145,18 +148,16 @@
 	</h2>
 	<p>
 		<span class="ds-tag" style="margin-right: 0.5rem;">Økonomi</span>
-		Databasen er et økonomi- eller hjelpesystem, endringslogger overføres (DML, DCL og DDL). Lagres i
+		Databasen er et økonomi- eller hjelpesystem. Lagres i
 		11 år.
 	</p>
 	<p>
 		<span class="ds-tag" style="margin-right: 0.5rem;">Arkivlov</span>
-		Databasen skal forvaltes som arkiv (iht. arkivforskrifta § 5), endringslogger overføres (DML, DCL
-		og DDL). Lagres i 11 år.
+		Databasen skal forvaltes som arkiv (iht. arkivforskrifta § 5). Lagres i 11 år.
 	</p>
 	<p>
 		<span class="ds-tag" style="margin-right: 0.5rem;">endringer</span>
-		Endringslogger (DML, DCL og DDL) overføres for databasen, uten at det foreligger lovkrav. Lagres i
-		11 år.
+		Endringslogger (DML, DCL og DDL. AKA: UPDATE, GRANT, osv) overføres for databasen.
 	</p>
 	<p>
 		<span class="ds-tag" data-color="success" style="margin-right: 0.5rem;">read</span>

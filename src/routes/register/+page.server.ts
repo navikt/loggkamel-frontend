@@ -76,8 +76,14 @@ export const actions: Actions = {
 		const teknologi = formString(formData, 'teknologi');
 		const dbname = formString(formData, 'dbname');
 
-		if (formData.has('okonomi') && formData.has('endringerUtenKrav')) {
-			return fail(400, { error: 'Økonomi og endringslogger kan ikke velges samtidig.' });
+		if (
+			(formData.has('okonomi') || formData.has('arkivforskrift')) &&
+			formData.has('endringerUtenKrav')
+		) {
+			return fail(400, {
+				error:
+					'Endringslogger uten lovkrav kan ikke velges sammen med økonomi eller arkivforskrift.'
+			});
 		}
 
 		if (!naisteam || !dbname || (teknologi !== 'POSTGRESQL' && teknologi !== 'DB2')) {
@@ -92,6 +98,7 @@ export const actions: Actions = {
 				? 'cold-storage-requested'
 				: 'backfill-requested',
 			okonomi: formData.has('okonomi'),
+			arkivforskrift: formData.has('arkivforskrift'),
 			endringerUtenKrav: formData.has('endringerUtenKrav'),
 			loggingLeseoperasjoner: formData.has('loggingLeseoperasjoner')
 		};

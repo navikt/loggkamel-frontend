@@ -155,8 +155,14 @@ export const actions: Actions = {
 			return fail(400, { error: 'Velg naisteam som skal få loggene.' });
 		}
 
-		if (formData.has('okonomi') && formData.has('endringerUtenKrav')) {
-			return fail(400, { error: 'Økonomi og endringslogger kan ikke velges samtidig.' });
+		if (
+			(formData.has('okonomi') || formData.has('arkivforskrift')) &&
+			formData.has('endringerUtenKrav')
+		) {
+			return fail(400, {
+				error:
+					'Endringslogger uten lovkrav kan ikke velges sammen med økonomi eller arkivforskrift.'
+			});
 		}
 
 		const tasksResult = await getMyTasks(fetch, auth.headers);
@@ -181,6 +187,7 @@ export const actions: Actions = {
 			dbname: task.dbname,
 			backfill,
 			okonomi: formData.has('okonomi'),
+			arkivforskrift: formData.has('arkivforskrift'),
 			endringerUtenKrav: formData.has('endringerUtenKrav'),
 			loggingLeseoperasjoner: formData.has('loggingLeseoperasjoner')
 		};
