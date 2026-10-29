@@ -49,7 +49,7 @@
 								<th>DBMS</th>
 								<th>Database</th>
 								<th>Overførings-tasks</th>
-								<th>Klar</th>
+								<th>Lov-krav</th>
 								<th>Sett logger</th>
 							</tr>
 						</thead>
@@ -59,14 +59,6 @@
 									<td>{task.teknologi}</td>
 									<td>{task.dbname}</td>
 									<td>
-										{#if task.okonomi}
-											<span class="ds-tag">Økonomi</span>
-										{/if}
-
-										{#if task.arkivforskrift}
-											<span class="ds-tag">Arkivlov</span>
-										{/if}
-
 										{#if task.okonomi || task.arkivforskrift || task.endringerUtenKrav}
 											<span class="ds-tag">endringer</span>
 										{/if}
@@ -80,12 +72,16 @@
 										{/if}
 									</td>
 									<td>
-										{#if task.fiksa}
-											<span aria-label="Fikset" role="img">
-												<CheckmarkCircleIcon />
-											</span>
-										{:else}
-											Nei
+										{#if task.okonomi}
+											<span class="ds-tag">Økonomi</span>
+										{/if}
+
+										{#if task.arkivforskrift}
+											<span class="ds-tag">arkivforskrift</span>
+										{/if}
+
+										{#if !task.okonomi && !task.arkivforskrift}
+											<span class="ds-tag" data-variant="default" data-color="neutral">ingen</span>
 										{/if}
 									</td>
 									<td>

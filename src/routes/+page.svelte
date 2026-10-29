@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
-	import CheckmarkCircleIcon from '$lib/assets/CheckmarkCircleIcon.svelte';
 
 	let { data }: PageProps = $props();
 	let sortKey = $state<'team' | 'dbms' | 'database'>('team');
@@ -78,8 +77,7 @@
 						<button type="button" onclick={() => setSort('database')}>Database</button>
 					</th>
 					<th>Overførings-tasks</th>
-					<th>Klar</th>
-					<th>Sett logger</th>
+					<th>Lov-krav</th>
 					<th></th>
 				</tr>
 			</thead>
@@ -90,14 +88,6 @@
 						<td>{row.teknologi}</td>
 						<td>{row.dbname}</td>
 						<td>
-							{#if row.okonomi}
-								<span class="ds-tag">Økonomi</span>
-							{/if}
-
-							{#if row.arkivforskrift}
-								<span class="ds-tag">Arkivlov</span>
-							{/if}
-
 							{#if row.okonomi || row.arkivforskrift || row.endringerUtenKrav}
 								<span class="ds-tag">endringer</span>
 							{/if}
@@ -111,21 +101,16 @@
 							{/if}
 						</td>
 						<td>
-							{#if row.fiksa}
-								<span aria-label="Fikset" role="img">
-									<CheckmarkCircleIcon />
-								</span>
-							{:else}
-								Nei
+							{#if row.okonomi}
+								<span class="ds-tag">Økonomi</span>
 							{/if}
-						</td>
-						<td>
-							{#if row.funnetLogger}
-								<span aria-label="Ja" role="img">
-									<CheckmarkCircleIcon />
-								</span>
-							{:else}
-								Nei
+
+							{#if row.arkivforskrift}
+								<span class="ds-tag">arkivforskrift</span>
+							{/if}
+
+							{#if !row.okonomi && !row.arkivforskrift}
+								<span class="ds-tag" data-variant="default" data-color="neutral">ingen</span>
 							{/if}
 						</td>
 						<td style="text-align: right;">
@@ -144,14 +129,14 @@
 	{/if}
 
 	<h2 class="ds-heading" data-size="m" style="margin-bottom:var(--ds-size-4); margin-top: 3rem;">
-		Forklaring av overførings-tasks
+		Forklaring av overførings-tasks og lov-krav
 	</h2>
 	<p>
 		<span class="ds-tag" style="margin-right: 0.5rem;">Økonomi</span>
 		Databasen er et økonomi- eller hjelpesystem. Lagres i 11 år.
 	</p>
 	<p>
-		<span class="ds-tag" style="margin-right: 0.5rem;">Arkivlov</span>
+		<span class="ds-tag" style="margin-right: 0.5rem;">arkivforskrift</span>
 		Databasen skal forvaltes som arkiv (iht. arkivforskrifta § 5). Lagres i 11 år.
 	</p>
 	<p>
