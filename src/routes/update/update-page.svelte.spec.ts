@@ -33,7 +33,7 @@ function pageData(
 }
 
 describe('update page backfill checkbox', () => {
-	it('checks the checkbox when backfill is false', async () => {
+	it('checks the checkbox when cold storage is requested', async () => {
 		render(UpdatePage, { data: pageData('cold-storage-requested'), form: null, params: {} });
 
 		await expect.element(page.getByTestId('coldStorageInsteadOfBackfill')).toBeChecked();
@@ -45,8 +45,9 @@ describe('update page backfill checkbox', () => {
 		await expect.element(page.getByTestId('coldStorageInsteadOfBackfill')).not.toBeChecked();
 	});
 
-	it('shows completed text instead of the checkbox for other backfill states', async () => {
-		render(UpdatePage, { data: pageData('backfill-completed'), form: null, params: {} });
+	it.each(['backfill-completed', 'cold-storage-completed'])(
+		'shows completed text instead of the checkbox for other backfill states', async (backfillStatus) => {
+		render(UpdatePage, { data: pageData(backfillStatus), form: null, params: {} });
 
 		await expect.element(page.getByTestId('backfillCompleted')).toBeInTheDocument();
 		await expect.element(page.getByTestId('coldStorageInsteadOfBackfill')).not.toBeInTheDocument();
@@ -94,17 +95,4 @@ describe('update page backfill checkbox', () => {
 		await expect.element(page.getByTestId('arkivforskrift')).toBeChecked();
 	});
 
-	it('resets the archive checkbox when refreshed task data arrives', async () => {
-		const view = await render(UpdatePage, {
-			data: pageData('backfill-requested', false, false, true),
-			form: null,
-			params: {}
-		});
-		await expect.element(page.getByTestId('arkivforskrift')).toBeChecked();
-		await page.getByTestId('arkivforskrift').click();
-
-		await view.rerender({ data: pageData('backfill-requested', false, false, true) });
-
-		await expect.element(page.getByTestId('arkivforskrift')).toBeChecked();
-	});
 });

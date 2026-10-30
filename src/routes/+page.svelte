@@ -131,22 +131,14 @@
 	<h2 class="ds-heading" data-size="m" style="margin-bottom:var(--ds-size-4); margin-top: 3rem;">
 		Forklaring av overførings-tasks og lov-krav
 	</h2>
-	<p>
-		<span class="ds-tag" style="margin-right: 0.5rem;">Økonomi</span>
-		Databasen er et økonomi- eller hjelpesystem. Lagres i 11 år.
-	</p>
-	<p>
-		<span class="ds-tag" style="margin-right: 0.5rem;">arkivforskrift</span>
-		Databasen skal forvaltes som arkiv (iht. arkivforskrifta § 5). Lagres i 11 år.
-	</p>
+	Alle logger overføres til naisteam-prosjektets log bucket. Derfra blir de automatisk overført, slik at de blir tilgjengelige i GAAL og lagres i 11 år.
 	<p>
 		<span class="ds-tag" style="margin-right: 0.5rem;">endringer</span>
-		Endringslogger (DML, DCL og DDL. AKA: UPDATE, GRANT, osv) overføres for databasen.
+		Endringslogger (DDL, DML og DCL som UPDATE) overføres
 	</p>
 	<p>
 		<span class="ds-tag" data-color="success" style="margin-right: 0.5rem;">read</span>
-		SELECT-logger overføres til naisteamets Default log bucket (standard-lagringstid på 30 dager), og
-		videresendes ikke av Nais.
+		Leselogger (SELECT) overføres
 	</p>
 	<p>
 		<span class="ds-tag" data-variant="default" data-color="neutral" style="margin-right: 0.5rem;"
@@ -154,4 +146,24 @@
 		>
 		Tasks slettet eller registrert uten tasks (så loggkamel kan ignorere loggene).
 	</p>
+
+	<h2 class="ds-heading" data-size="m" style="margin-bottom:var(--ds-size-4); margin-top: 3rem;">
+		Lovkrav:
+	</h2>
+	<p>
+		<span class="ds-tag" style="margin-right: 0.5rem;">Økonomi</span>
+		Databasen er et økonomi- eller hjelpesystem i henhold (<a href="https://etterlevelse.ansatt.nav.no/krav/125/2" target="_blank" rel="noopener noreferrer">etterlevelseskrav 125</a>)
+	</p>
+	<p>
+		<span class="ds-tag" style="margin-right: 0.5rem;">arkivforskrift</span>
+		Databasen er underlagt arkivforskrifta § 5
+	</p>
+	<p>
+		<span class="ds-tag" data-variant="default" data-color="neutral" style="margin-right: 0.5rem;"
+			>Ingen</span
+		>
+		Tasks har ingen spesifisk lovkrav som gjelder. De kan fortsatt være overført til loggbucketen.
+	</p>
+	
+	
 </div>
