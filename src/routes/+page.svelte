@@ -165,6 +165,6 @@
 		<span class="ds-tag" data-variant="default" data-color="neutral" style="margin-right: 0.5rem;"
 			>Ingen</span
 		>
-		Tasks har ingen spesifisk lovkrav som gjelder. De kan fortsatt være overført til loggbucketen.
+		Tasks har ingen spesifikke lovkrav som gjelder. De kan fortsatt være overført til loggbucketen.
 	</p>
 </div>
