@@ -29,6 +29,7 @@ function task(teknologi: string, dbname: string, backfill: string, naisteam = 't
 		dbname,
 		backfill,
 		okonomi: false,
+		arkivforskrift: false,
 		endringerUtenKrav: false,
 		loggingLeseoperasjoner: false,
 		fiksa: false,

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
-	import CheckmarkCircleIcon from '$lib/assets/CheckmarkCircleIcon.svelte';
 
 	let { data }: PageProps = $props();
 	let sortKey = $state<'team' | 'dbms' | 'database'>('team');
@@ -78,8 +77,7 @@
 						<button type="button" onclick={() => setSort('database')}>Database</button>
 					</th>
 					<th>Overførings-tasks</th>
-					<th>Klar</th>
-					<th>Sett logger</th>
+					<th>Lov-krav</th>
 					<th></th>
 				</tr>
 			</thead>
@@ -89,13 +87,8 @@
 						<td>{row.naisteam}</td>
 						<td>{row.teknologi}</td>
 						<td>{row.dbname}</td>
-						<!-- TODO: find out whether to add arkivlov & if so, add to backend too -->
 						<td>
-							{#if row.okonomi}
-								<span class="ds-tag">Økonomi</span>
-							{/if}
-
-							{#if row.endringerUtenKrav && !row.okonomi}
+							{#if row.okonomi || row.arkivforskrift || row.endringerUtenKrav}
 								<span class="ds-tag">endringer</span>
 							{/if}
 
@@ -103,26 +96,21 @@
 								<span class="ds-tag" data-color="success">read</span>
 							{/if}
 
-							{#if !row.okonomi && !row.endringerUtenKrav && !row.loggingLeseoperasjoner}
+							{#if !row.okonomi && !row.arkivforskrift && !row.endringerUtenKrav && !row.loggingLeseoperasjoner}
 								<span class="ds-tag" data-variant="default" data-color="neutral">ingen</span>
 							{/if}
 						</td>
 						<td>
-							{#if row.fiksa}
-								<span aria-label="Fikset" role="img">
-									<CheckmarkCircleIcon />
-								</span>
-							{:else}
-								Nei
+							{#if row.okonomi}
+								<span class="ds-tag">Økonomi</span>
 							{/if}
-						</td>
-						<td>
-							{#if row.funnetLogger}
-								<span aria-label="Ja" role="img">
-									<CheckmarkCircleIcon />
-								</span>
-							{:else}
-								Nei
+
+							{#if row.arkivforskrift}
+								<span class="ds-tag">arkivforskrift</span>
+							{/if}
+
+							{#if !row.okonomi && !row.arkivforskrift}
+								<span class="ds-tag" data-variant="default" data-color="neutral">ingen</span>
 							{/if}
 						</td>
 						<td style="text-align: right;">
@@ -141,32 +129,42 @@
 	{/if}
 
 	<h2 class="ds-heading" data-size="m" style="margin-bottom:var(--ds-size-4); margin-top: 3rem;">
-		Forklaring av overførings-tasks
+		Forklaring av overførings-tasks og lov-krav
 	</h2>
-	<p>
-		<span class="ds-tag" style="margin-right: 0.5rem;">Økonomi</span>
-		Databasen er et økonomi- eller hjelpesystem, endringslogger overføres (DML, DCL og DDL). Lagres i
-		11 år.
-	</p>
-	<p>
-		<span class="ds-tag" style="margin-right: 0.5rem;">Arkivlov</span>
-		Databasen skal forvaltes som arkiv (iht. arkivforskrifta § 5), endringslogger overføres (DML, DCL
-		og DDL). Lagres i 11 år.
-	</p>
+	Alle logger overføres til naisteam-prosjektets log bucket. Derfra blir de automatisk overført, slik
+	at de blir tilgjengelige i GAAL og lagres i 11 år.
 	<p>
 		<span class="ds-tag" style="margin-right: 0.5rem;">endringer</span>
-		Endringslogger (DML, DCL og DDL) overføres for databasen, uten at det foreligger lovkrav. Lagres i
-		11 år.
+		Endringslogger (DDL, DML og DCL som UPDATE) overføres
 	</p>
 	<p>
 		<span class="ds-tag" data-color="success" style="margin-right: 0.5rem;">read</span>
-		SELECT-logger overføres til naisteamets Default log bucket (standard-lagringstid på 30 dager), og
-		videresendes ikke av Nais.
+		Leselogger (SELECT) overføres
 	</p>
 	<p>
 		<span class="ds-tag" data-variant="default" data-color="neutral" style="margin-right: 0.5rem;"
 			>Ingen</span
 		>
 		Tasks slettet eller registrert uten tasks (så loggkamel kan ignorere loggene).
+	</p>
+
+	<p>Lovkrav:</p>
+	<p>
+		<span class="ds-tag" style="margin-right: 0.5rem;">Økonomi</span>
+		Databasen er et økonomi- eller hjelpesystem i henhold til (<a
+			href="https://etterlevelse.ansatt.nav.no/krav/125/2"
+			target="_blank"
+			rel="noopener noreferrer">etterlevelseskrav 125</a
+		>)
+	</p>
+	<p>
+		<span class="ds-tag" style="margin-right: 0.5rem;">arkivforskrift</span>
+		Databasen er underlagt arkivforskrifta § 5
+	</p>
+	<p>
+		<span class="ds-tag" data-variant="default" data-color="neutral" style="margin-right: 0.5rem;"
+			>Ingen</span
+		>
+		Tasks har ingen spesifikke lovkrav som gjelder. De kan fortsatt være overført til loggbucketen.
 	</p>
 </div>

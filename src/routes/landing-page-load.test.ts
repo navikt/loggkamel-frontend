@@ -54,6 +54,7 @@ describe('landing page load', () => {
 				teknologi: 'PostgreSQL',
 				dbname: 'database-a',
 				okonomi: true,
+				arkivforskrift: false,
 				endringerUtenKrav: false,
 				loggingLeseoperasjoner: false,
 				fiksa: false,
