@@ -151,7 +151,7 @@
 	<p>Lovkrav:</p>
 	<p>
 		<span class="ds-tag" style="margin-right: 0.5rem;">Økonomi</span>
-		Databasen er et økonomi- eller hjelpesystem i henhold (<a
+		Databasen er et økonomi- eller hjelpesystem i henhold til (<a
 			href="https://etterlevelse.ansatt.nav.no/krav/125/2"
 			target="_blank"
 			rel="noopener noreferrer">etterlevelseskrav 125</a
