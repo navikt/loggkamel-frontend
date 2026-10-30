@@ -131,7 +131,8 @@
 	<h2 class="ds-heading" data-size="m" style="margin-bottom:var(--ds-size-4); margin-top: 3rem;">
 		Forklaring av overførings-tasks og lov-krav
 	</h2>
-	Alle logger overføres til naisteam-prosjektets log bucket. Derfra blir de automatisk overført, slik at de blir tilgjengelige i GAAL og lagres i 11 år.
+	Alle logger overføres til naisteam-prosjektets log bucket. Derfra blir de automatisk overført, slik
+	at de blir tilgjengelige i GAAL og lagres i 11 år.
 	<p>
 		<span class="ds-tag" style="margin-right: 0.5rem;">endringer</span>
 		Endringslogger (DDL, DML og DCL som UPDATE) overføres
@@ -152,7 +153,11 @@
 	</h2>
 	<p>
 		<span class="ds-tag" style="margin-right: 0.5rem;">Økonomi</span>
-		Databasen er et økonomi- eller hjelpesystem i henhold (<a href="https://etterlevelse.ansatt.nav.no/krav/125/2" target="_blank" rel="noopener noreferrer">etterlevelseskrav 125</a>)
+		Databasen er et økonomi- eller hjelpesystem i henhold (<a
+			href="https://etterlevelse.ansatt.nav.no/krav/125/2"
+			target="_blank"
+			rel="noopener noreferrer">etterlevelseskrav 125</a
+		>)
 	</p>
 	<p>
 		<span class="ds-tag" style="margin-right: 0.5rem;">arkivforskrift</span>
@@ -164,6 +169,4 @@
 		>
 		Tasks har ingen spesifisk lovkrav som gjelder. De kan fortsatt være overført til loggbucketen.
 	</p>
-	
-	
 </div>

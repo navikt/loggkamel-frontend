@@ -46,12 +46,16 @@ describe('update page backfill checkbox', () => {
 	});
 
 	it.each(['backfill-completed', 'cold-storage-completed'])(
-		'shows completed text instead of the checkbox for other backfill states', async (backfillStatus) => {
-		render(UpdatePage, { data: pageData(backfillStatus), form: null, params: {} });
+		'shows completed text instead of the checkbox for other backfill states',
+		async (backfillStatus) => {
+			render(UpdatePage, { data: pageData(backfillStatus), form: null, params: {} });
 
-		await expect.element(page.getByTestId('backfillCompleted')).toBeInTheDocument();
-		await expect.element(page.getByTestId('coldStorageInsteadOfBackfill')).not.toBeInTheDocument();
-	});
+			await expect.element(page.getByTestId('backfillCompleted')).toBeInTheDocument();
+			await expect
+				.element(page.getByTestId('coldStorageInsteadOfBackfill'))
+				.not.toBeInTheDocument();
+		}
+	);
 
 	it('unchecks both mandatory reasons when non-mandatory change logging is checked', async () => {
 		render(UpdatePage, {
@@ -94,5 +98,4 @@ describe('update page backfill checkbox', () => {
 		await expect.element(page.getByTestId('okonomi')).toBeChecked();
 		await expect.element(page.getByTestId('arkivforskrift')).toBeChecked();
 	});
-
 });
