@@ -148,9 +148,7 @@
 		Tasks slettet eller registrert uten tasks (så loggkamel kan ignorere loggene).
 	</p>
 
-	<p>
-		Lovkrav:
-	</p>
+	<p>Lovkrav:</p>
 	<p>
 		<span class="ds-tag" style="margin-right: 0.5rem;">Økonomi</span>
 		Databasen er et økonomi- eller hjelpesystem i henhold (<a
