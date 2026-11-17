@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { resolveLoggkamelConfig } from './loggkamel-config';
+import { getLoggkamelConfig, resolveLoggkamelConfig } from './loggkamel-config';
 
 describe('resolveLoggkamelConfig', () => {
 	it('returns the dev backend URL and audience for dev-gcp', () => {
@@ -22,5 +22,9 @@ describe('resolveLoggkamelConfig', () => {
 		expect(() => resolveLoggkamelConfig(clusterName)).toThrow(
 			'Unsupported or missing NAIS_CLUSTER_NAME'
 		);
+	});
+
+	it('reads the runtime dev-gcp variable', () => {
+		expect(getLoggkamelConfig()).toEqual(resolveLoggkamelConfig('dev-gcp'));
 	});
 });

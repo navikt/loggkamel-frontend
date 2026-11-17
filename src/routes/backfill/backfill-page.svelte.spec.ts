@@ -1,7 +1,7 @@
 import { page } from 'vitest/browser';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import type { SubmitFunction } from '@sveltejs/kit';
+import type { SubmitFunction } from '$app/forms';
 import type { TeamTask, TeamsWithTasks } from '#lib/types.ts';
 import BackfillPage from './+page.svelte';
 import type { PageData } from './$types';
@@ -65,7 +65,12 @@ function pageData(): PageData {
 
 async function finishSubmission(
 	update = vi.fn().mockResolvedValue(undefined),
-	result: Parameters<Completion>[0]['result'] = { type: 'success', status: 200, data: {} }
+	result: Parameters<Completion>[0]['result'] = {
+		type: 'success',
+		status: 200,
+		data: {},
+		location: '/backfill'
+	}
 ) {
 	const { options, finish } = submissions[0];
 	await finish({
@@ -191,6 +196,7 @@ describe('backfill completion feedback', () => {
 		await finishSubmission(update, {
 			type: 'failure',
 			status: 409,
+			location: '/backfill',
 			data: { error: 'Completion was rejected.' }
 		});
 
