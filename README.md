@@ -14,6 +14,25 @@ Kontakt oss på Slack
 - [Designsystemet.no](https://designsystemet.no/)
 - Typescript
 
+## Download dependencies
+
+Configure npm to expect a github access token when installing by adding the following to your ~/.npmrc file:
+
+```sh
+//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+```
+
+When you want to update dependencies:
+* Create a github token with "read:packages" permission
+* Authorize the token in github with access to the navikt organization
+* Make the token available as a local environment variable
+
+```sh
+export NODE_AUTH_TOKEN=[insert token here]
+```
+
+IMPORTANT: Do not save token locally, just generate a new one when you need to update dependencies.
+
 ## Kjøre lokalt
 
 Anbefaler pnpm og `pnpm config --global set minimumReleaseAge 4320`, se [Navs security playbook](https://sikkerhet.nav.no/docs/sikker-utvikling/supply-chain/#npm--nodejs).
