@@ -23,9 +23,10 @@ Configure npm to expect a github access token when installing by adding the foll
 ```
 
 When you want to update dependencies:
-* Create a github token with "read:packages" permission
-* Authorize the token in github with access to the navikt organization
-* Make the token available as a local environment variable
+
+- Create a github token with "read:packages" permission
+- Authorize the token in github with access to the navikt organization
+- Make the token available as a local environment variable
 
 ```sh
 export NODE_AUTH_TOKEN=[insert token here]
