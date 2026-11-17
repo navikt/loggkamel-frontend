@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
-import type { TeamsWithTasks } from '$lib/types';
-import { getLoggkamelConfig } from '$lib/server/loggkamel-config';
+import type { TeamsWithTasks } from '#lib/types.ts';
+import { getLoggkamelConfig } from '#lib/server/loggkamel-config.ts';
 
 export const load: PageServerLoad = async () => {
 	const response = await fetch(`${getLoggkamelConfig().apiUrl}/naisteam/auditlogg/by-team`);

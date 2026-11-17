@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { beforeNavigate } from '$app/navigation';
-	import { enhance } from '$app/forms';
-	import type { SubmitFunction } from '@sveltejs/kit';
-	import BackendAccessNotice from '$lib/BackendAccessNotice.svelte';
-	import type { TeamTask } from '$lib/types';
+	import { enhance, type SubmitFunction } from '$app/forms';
+	import BackendAccessNotice from '#lib/BackendAccessNotice.svelte';
+	import type { TeamTask } from '#lib/types.ts';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();

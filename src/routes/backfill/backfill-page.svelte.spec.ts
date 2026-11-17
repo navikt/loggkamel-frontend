@@ -1,8 +1,8 @@
 import { page } from 'vitest/browser';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import type { SubmitFunction } from '@sveltejs/kit';
-import type { TeamTask, TeamsWithTasks } from '$lib/types';
+import type { SubmitFunction } from '$app/forms';
+import type { TeamTask, TeamsWithTasks } from '#lib/types.ts';
 import BackfillPage from './+page.svelte';
 import type { PageData } from './$types';
 
@@ -65,7 +65,12 @@ function pageData(): PageData {
 
 async function finishSubmission(
 	update = vi.fn().mockResolvedValue(undefined),
-	result: Parameters<Completion>[0]['result'] = { type: 'success', status: 200, data: {} }
+	result: Parameters<Completion>[0]['result'] = {
+		type: 'success',
+		status: 200,
+		data: {},
+		location: '/backfill'
+	}
 ) {
 	const { options, finish } = submissions[0];
 	await finish({
@@ -126,9 +131,9 @@ describe('backfill team overview', () => {
 			});
 			await page.getByTestId('backfill-team-summary-team-a').click();
 			const row = page.getByTestId(`backfill-task-${teknologi}-audit-db`);
-			await expect.element(row).toHaveTextContent(teknologi);
-			await expect.element(row).toHaveTextContent('audit-db');
-			await expect.element(row).toHaveTextContent(backfill);
+			await expect.element(row).toMatchTextContent(teknologi);
+			await expect.element(row).toMatchTextContent('audit-db');
+			await expect.element(row).toMatchTextContent(backfill);
 			const complete = page.getByTestId(`backfill-complete-${teknologi}-audit-db`);
 			const download = page.getByTestId(`backfill-download-${teknologi}-audit-db`);
 			const noActions = page.getByTestId(`backfill-no-actions-${teknologi}-audit-db`);
@@ -191,6 +196,7 @@ describe('backfill completion feedback', () => {
 		await finishSubmission(update, {
 			type: 'failure',
 			status: 409,
+			location: '/backfill',
 			data: { error: 'Completion was rejected.' }
 		});
 

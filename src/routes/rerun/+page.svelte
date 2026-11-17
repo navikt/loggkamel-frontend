@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import BackendAccessNotice from '$lib/BackendAccessNotice.svelte';
+	import BackendAccessNotice from '#lib/BackendAccessNotice.svelte';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
