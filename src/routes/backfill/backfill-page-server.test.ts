@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('$lib/server/authenticated-headers', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$lib/server/authenticated-headers')>()),
+vi.mock('#lib/server/authenticated-headers.ts', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/server/authenticated-headers.ts')>()),
 	getAuthenticatedHeaders: vi.fn()
 }));
 
-import { authErrors, getAuthenticatedHeaders } from '$lib/server/authenticated-headers';
+import { authErrors, getAuthenticatedHeaders } from '#lib/server/authenticated-headers.ts';
 import { actions, load } from './+page.server';
 import type { Actions, PageServerLoad } from './$types';
 

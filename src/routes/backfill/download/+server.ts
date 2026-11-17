@@ -1,7 +1,7 @@
 import type { RequestHandler } from './$types';
-import { authErrors, getAuthenticatedHeaders } from '$lib/server/authenticated-headers';
-import { backfillError, isValidDatabaseName } from '$lib/server/backfill';
-import { getLoggkamelConfig } from '$lib/server/loggkamel-config';
+import { authErrors, getAuthenticatedHeaders } from '#lib/server/authenticated-headers.ts';
+import { backfillError, isValidDatabaseName } from '#lib/server/backfill.ts';
+import { getLoggkamelConfig } from '#lib/server/loggkamel-config.ts';
 
 const DOWNLOAD_ERROR = 'Could not download the DB2 cold-storage export. Please try again later.';
 

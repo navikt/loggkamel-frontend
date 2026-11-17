@@ -4,7 +4,7 @@ const { getAuthenticatedHeadersMock } = vi.hoisted(() => ({
 	getAuthenticatedHeadersMock: vi.fn()
 }));
 
-vi.mock('$lib/server/authenticated-headers', () => ({
+vi.mock('#lib/server/authenticated-headers.ts', () => ({
 	authErrors: {
 		'missing-token': 'Authentication error',
 		'invalid-token': 'Authentication error',

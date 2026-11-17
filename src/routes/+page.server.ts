@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
-import type { TeamTask, TeamsWithTasks } from '$lib/types';
-import { authErrors, getAuthenticatedHeaders } from '$lib/server/authenticated-headers';
-import { getLoggkamelConfig } from '$lib/server/loggkamel-config';
+import type { TeamTask, TeamsWithTasks } from '#lib/types.ts';
+import { authErrors, getAuthenticatedHeaders } from '#lib/server/authenticated-headers.ts';
+import { getLoggkamelConfig } from '#lib/server/loggkamel-config.ts';
 
 export const load: PageServerLoad = async ({ fetch, request }) => {
 	const auth = await getAuthenticatedHeaders(request);

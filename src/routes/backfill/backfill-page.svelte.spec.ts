@@ -2,7 +2,7 @@ import { page } from 'vitest/browser';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import type { SubmitFunction } from '@sveltejs/kit';
-import type { TeamTask, TeamsWithTasks } from '$lib/types';
+import type { TeamTask, TeamsWithTasks } from '#lib/types.ts';
 import BackfillPage from './+page.svelte';
 import type { PageData } from './$types';
 
