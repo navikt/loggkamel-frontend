@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
-	import CheckmarkCircleIcon from '$lib/assets/CheckmarkCircleIcon.svelte';
-	import favicon from '$lib/assets/favicon.svg';
+	import CheckmarkCircleIcon from '#lib/assets/CheckmarkCircleIcon.svelte';
+	import favicon from '#lib/assets/favicon.svg';
 
 	let { data }: PageProps = $props();
 	const teamsWithTasks = $derived(

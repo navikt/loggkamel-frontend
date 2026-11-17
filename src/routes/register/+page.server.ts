@@ -1,7 +1,7 @@
 import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { authErrors, getAuthenticatedHeaders } from '$lib/server/authenticated-headers';
-import { getLoggkamelConfig } from '$lib/server/loggkamel-config';
+import { authErrors, getAuthenticatedHeaders } from '#lib/server/authenticated-headers.ts';
+import { getLoggkamelConfig } from '#lib/server/loggkamel-config.ts';
 
 type TeamsResult = { ok: true; teams: string[] } | { ok: false; error: string };
 

@@ -1,5 +1,5 @@
 import { getToken, requestAzureOboToken, validateToken } from '@navikt/oasis';
-import { getLoggkamelConfig } from '$lib/server/loggkamel-config';
+import { getLoggkamelConfig } from '#lib/server/loggkamel-config.ts';
 
 type AuthenticatedHeadersResult =
 	| { ok: true; headers: Headers }

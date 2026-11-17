@@ -1,8 +1,8 @@
 import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import type { TeamTask, TeamsWithTasks } from '$lib/types';
-import { authErrors, getAuthenticatedHeaders } from '$lib/server/authenticated-headers';
-import { getLoggkamelConfig } from '$lib/server/loggkamel-config';
+import type { TeamTask, TeamsWithTasks } from '#lib/types.ts';
+import { authErrors, getAuthenticatedHeaders } from '#lib/server/authenticated-headers.ts';
+import { getLoggkamelConfig } from '#lib/server/loggkamel-config.ts';
 
 type UpdateTask = TeamTask & { backfill: string };
 type TasksResult = { ok: true; tasks: UpdateTask[] } | { ok: false; error: string };

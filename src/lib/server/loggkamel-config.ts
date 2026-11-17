@@ -1,4 +1,4 @@
-import { env } from '$env/dynamic/private';
+import { NAIS_CLUSTER_NAME } from '$app/env/private';
 
 type LoggkamelConfig = {
 	baseUrl: string;
@@ -33,6 +33,6 @@ export function resolveLoggkamelConfig(clusterName: string | undefined): Loggkam
 let config: LoggkamelConfig | undefined;
 
 export function getLoggkamelConfig(): LoggkamelConfig {
-	config ??= resolveLoggkamelConfig(env.NAIS_CLUSTER_NAME);
+	config ??= resolveLoggkamelConfig(NAIS_CLUSTER_NAME);
 	return config;
 }

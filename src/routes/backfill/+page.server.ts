@@ -1,9 +1,9 @@
 import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import type { TeamsWithTasks } from '$lib/types';
-import { authErrors, getAuthenticatedHeaders } from '$lib/server/authenticated-headers';
-import { backfillError, isValidDatabaseName } from '$lib/server/backfill';
-import { getLoggkamelConfig } from '$lib/server/loggkamel-config';
+import type { TeamsWithTasks } from '#lib/types.ts';
+import { authErrors, getAuthenticatedHeaders } from '#lib/server/authenticated-headers.ts';
+import { backfillError, isValidDatabaseName } from '#lib/server/backfill.ts';
+import { getLoggkamelConfig } from '#lib/server/loggkamel-config.ts';
 
 const LOAD_ERROR = 'Could not load backfill and cold-storage requests. Please try again later.';
 const COMPLETE_ERROR = 'Could not mark the task as completed. Please try again later.';
