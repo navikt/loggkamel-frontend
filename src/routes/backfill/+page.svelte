@@ -7,7 +7,6 @@
 
 	let { data, form }: PageProps = $props();
 	let pending = $state.raw<TeamTask | null>(null);
-	let downloadNotice = $state<string | null>(null);
 	const activeTeams = $derived(data.teamsWithTasks.filter((team) => team.tasksForTeam.length > 0));
 
 	beforeNavigate(({ cancel }) => {
@@ -21,7 +20,6 @@
 				return;
 			}
 			pending = task;
-			downloadNotice = null;
 			return async ({ update }) => {
 				try {
 					await update();
@@ -48,11 +46,7 @@
 		</div>
 	{/if}
 
-	{#if downloadNotice}
-		<div class="ds-alert" data-color="info" role="status" data-testid="backfill-download-notice">
-			{downloadNotice}
-		</div>
-	{:else if !pending && form?.error}
+	{#if !pending && form?.error}
 		<div class="ds-alert" data-color="danger" role="alert" data-testid="backfill-action-error">
 			{form.error}
 		</div>
@@ -104,23 +98,6 @@
 											<td>{task.backfill}</td>
 											<td>
 												<div class="buddy-items">
-													{#if task.teknologi === 'DB2' && task.backfill === 'cold-storage-requested'}
-														<a
-															data-testid={`backfill-download-${task.teknologi}-${task.dbname}`}
-															class="ds-button"
-															data-variant="secondary"
-															href={`/backfill/download?dbname=${encodeURIComponent(task.dbname)}`}
-															target="_blank"
-															rel="noopener noreferrer"
-															data-sveltekit-reload
-															data-sveltekit-preload-data="off"
-															aria-label={`Download Files for ${task.dbname}`}
-															onclick={() =>
-																(downloadNotice = `Download requested for ${task.dbname}. Your browser will manage the download. If the request fails, an error will appear in the new tab.`)}
-														>
-															Download Files
-														</a>
-													{/if}
 													{#if task.teknologi === 'POSTGRESQL' || (task.teknologi === 'DB2' && task.backfill === 'cold-storage-requested')}
 														<form
 															data-testid={`backfill-complete-form-${task.teknologi}-${task.dbname}`}
