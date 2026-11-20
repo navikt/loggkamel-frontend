@@ -52,10 +52,6 @@ starts preview on port 4173 with `NAIS_CLUSTER_NAME=dev-gcp`.
 - `/rerun` manages failed pulls. `/backfill` manages requested backfill and
   cold-storage tasks. These administrative pages show `BackendAccessNotice`;
   the backend enforces membership in the Sikkerhetstjenesten team.
-- `/backfill/download/+server.ts` proxies DB2 cold-storage ZIP downloads. It
-  streams the upstream body, forwards cancellation through `request.signal`,
-  disables caching and rejects upstream redirects. Preserve streaming rather
-  than buffering the archive or sending the browser directly to the backend.
 - `src/lib/types.ts` contains shared backend response types (`TeamTask`,
   `TeamsWithTasks`, `RerunPull`). Preserve the API's Norwegian field names and
   status strings rather than translating them.
