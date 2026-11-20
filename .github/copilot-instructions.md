@@ -13,23 +13,23 @@ to the `navikt` organization. Follow the README's user-level npm configuration;
 do not persist the token in the repository. The README recommends
 `pnpm config --global set minimumReleaseAge 4320`.
 
-| Task | Command |
-| --- | --- |
-| Install locked dependencies | `pnpm install --frozen-lockfile` |
-| Start development server | `NAIS_CLUSTER_NAME=dev-gcp pnpm run dev` |
-| Type-check Svelte and TypeScript | `pnpm run check` |
-| Check formatting (the lint script is Prettier) | `pnpm run lint` |
-| Format files | `pnpm run format` |
-| Build | `pnpm run build` |
-| Preview production build | `NAIS_CLUSTER_NAME=dev-gcp pnpm run preview` |
-| Install Chromium for component tests | `pnpm exec playwright install chromium` |
-| Run all unit and component tests once | `pnpm exec vitest run` |
-| Run one server test file | `pnpm exec vitest run --project server src/routes/register/register-page-server.test.ts` |
-| Run one test by name | `pnpm exec vitest run --project server src/routes/register/register-page-server.test.ts -t 'loads the naisteams available to the signed-in user'` |
-| Run one component test file | `pnpm exec vitest run --project client src/routes/register/register-page.svelte.spec.ts` |
-| Run unit/component tests, then E2E tests | `pnpm test` |
-| Install Playwright browsers and run E2E tests | `pnpm run test:e2e` |
-| Run one E2E file with browsers already installed | `pnpm exec playwright test src/routes/demo/playwright/page.svelte.e2e.ts` |
+| Task                                             | Command                                                                                                                                           |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Install locked dependencies                      | `pnpm install --frozen-lockfile`                                                                                                                  |
+| Start development server                         | `NAIS_CLUSTER_NAME=dev-gcp pnpm run dev`                                                                                                          |
+| Type-check Svelte and TypeScript                 | `pnpm run check`                                                                                                                                  |
+| Check formatting (the lint script is Prettier)   | `pnpm run lint`                                                                                                                                   |
+| Format files                                     | `pnpm run format`                                                                                                                                 |
+| Build                                            | `pnpm run build`                                                                                                                                  |
+| Preview production build                         | `NAIS_CLUSTER_NAME=dev-gcp pnpm run preview`                                                                                                      |
+| Install Chromium for component tests             | `pnpm exec playwright install chromium`                                                                                                           |
+| Run all unit and component tests once            | `pnpm exec vitest run`                                                                                                                            |
+| Run one server test file                         | `pnpm exec vitest run --project server src/routes/register/register-page-server.test.ts`                                                          |
+| Run one test by name                             | `pnpm exec vitest run --project server src/routes/register/register-page-server.test.ts -t 'loads the naisteams available to the signed-in user'` |
+| Run one component test file                      | `pnpm exec vitest run --project client src/routes/register/register-page.svelte.spec.ts`                                                          |
+| Run unit/component tests, then E2E tests         | `pnpm test`                                                                                                                                       |
+| Install Playwright browsers and run E2E tests    | `pnpm run test:e2e`                                                                                                                               |
+| Run one E2E file with browsers already installed | `pnpm exec playwright test src/routes/demo/playwright/page.svelte.e2e.ts`                                                                         |
 
 `pnpm run test:unit` starts Vitest in watch mode. In `vite.config.ts`, the
 `client` project runs `*.svelte.{test,spec}.{js,ts}` in headless Chromium through
