@@ -2,17 +2,16 @@ import { page } from 'vitest/browser';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import type { SubmitFunction } from '$app/forms';
-import type { TeamTask, TeamsWithTasks } from '#lib/types.ts';
+import type { TeamTask } from '#lib/types.ts';
 import BackfillPage from './+page.svelte';
 import type { PageData } from './$types';
 
-const { enhanceMock, beforeNavigateMock } = vi.hoisted(() => ({
-	enhanceMock: vi.fn(),
-	beforeNavigateMock: vi.fn()
+const { enhanceMock } = vi.hoisted(() => ({
+	enhanceMock: vi.fn()
 }));
 
 vi.mock('$app/forms', () => ({ enhance: enhanceMock }));
-vi.mock('$app/navigation', () => ({ beforeNavigate: beforeNavigateMock }));
+vi.mock('$app/navigation', () => ({ beforeNavigate: vi.fn() }));
 
 type Completion = Exclude<Awaited<ReturnType<SubmitFunction>>, void>;
 type Submission = {
@@ -20,7 +19,6 @@ type Submission = {
 	finish: Completion;
 };
 let submissions: Submission[];
-let cancellations: ReturnType<typeof vi.fn>[];
 
 function task(teknologi: string, dbname: string, backfill: string, naisteam = 'team-a'): TeamTask {
 	return {
@@ -86,12 +84,10 @@ async function finishSubmission(
 beforeEach(() => {
 	vi.clearAllMocks();
 	submissions = [];
-	cancellations = [];
 	enhanceMock.mockImplementation((form: HTMLFormElement, submit: SubmitFunction) => {
 		const onSubmit = async (event: SubmitEvent) => {
 			event.preventDefault();
 			const cancel = vi.fn();
-			cancellations.push(cancel);
 			const options: Parameters<SubmitFunction>[0] = {
 				action: new URL(form.action),
 				formData: new FormData(form),
@@ -110,47 +106,44 @@ beforeEach(() => {
 
 describe('backfill team overview', () => {
 	it.each([
-		['POSTGRESQL', 'backfill-requested', true, false],
-		['POSTGRESQL', 'cold-storage-requested', true, false],
-		['DB2', 'backfill-requested', false, false],
-		['DB2', 'cold-storage-requested', true, true],
-		['DB2', 'backfill-completed', false, false],
-		['ORACLE', 'cold-storage-requested', false, false]
-	] as const)(
-		'shows the action matrix for %s / %s',
-		async (teknologi, backfill, canComplete, canDownload) => {
-			await render(BackfillPage, {
-				data: {
-					teamsWithTasks: [
-						{ naisteam: 'team-a', tasksForTeam: [task(teknologi, 'audit-db', backfill)] }
-					],
-					error: null
-				},
-				form: null,
-				params: {}
-			});
-			await page.getByTestId('backfill-team-summary-team-a').click();
-			const row = page.getByTestId(`backfill-task-${teknologi}-audit-db`);
-			await expect.element(row).toMatchTextContent(teknologi);
-			await expect.element(row).toMatchTextContent('audit-db');
-			await expect.element(row).toMatchTextContent(backfill);
-			const complete = page.getByTestId(`backfill-complete-${teknologi}-audit-db`);
-			const download = page.getByTestId(`backfill-download-${teknologi}-audit-db`);
-			const noActions = page.getByTestId(`backfill-no-actions-${teknologi}-audit-db`);
-			if (canComplete) {
-				await expect.element(complete).toBeVisible();
-				await expect.element(noActions).not.toBeInTheDocument();
-				await expect
-					.element(page.getByTestId(`backfill-complete-form-${teknologi}-audit-db`))
-					.toHaveAttribute('action', '?/complete');
-			} else {
-				await expect.element(complete).not.toBeInTheDocument();
-				await expect.element(noActions).toHaveTextContent('No actions available');
-			}
-			if (canDownload) await expect.element(download).toBeVisible();
-			else await expect.element(download).not.toBeInTheDocument();
+		['POSTGRESQL', 'backfill-requested', true],
+		['POSTGRESQL', 'cold-storage-requested', true],
+		['DB2', 'backfill-requested', false],
+		['DB2', 'cold-storage-requested', true],
+		['DB2', 'backfill-completed', false],
+		['ORACLE', 'cold-storage-requested', false]
+	] as const)('shows the action matrix for %s / %s', async (teknologi, backfill, canComplete) => {
+		await render(BackfillPage, {
+			data: {
+				teamsWithTasks: [
+					{ naisteam: 'team-a', tasksForTeam: [task(teknologi, 'audit-db', backfill)] }
+				],
+				error: null
+			},
+			form: null,
+			params: {}
+		});
+		await page.getByTestId('backfill-team-summary-team-a').click();
+		const row = page.getByTestId(`backfill-task-${teknologi}-audit-db`);
+		await expect.element(row).toMatchTextContent(teknologi);
+		await expect.element(row).toMatchTextContent('audit-db');
+		await expect.element(row).toMatchTextContent(backfill);
+		const complete = page.getByTestId(`backfill-complete-${teknologi}-audit-db`);
+		const noActions = page.getByTestId(`backfill-no-actions-${teknologi}-audit-db`);
+		if (canComplete) {
+			await expect.element(complete).toBeVisible();
+			await expect.element(noActions).not.toBeInTheDocument();
+			await expect
+				.element(page.getByTestId(`backfill-complete-form-${teknologi}-audit-db`))
+				.toHaveAttribute('action', '?/complete');
+		} else {
+			await expect.element(complete).not.toBeInTheDocument();
+			await expect.element(noActions).toHaveTextContent('No actions available');
 		}
-	);
+		await expect
+			.element(page.getByRole('link', { name: /Download Files/ }))
+			.not.toBeInTheDocument();
+	});
 
 	it('shows a loading error instead of a misleading empty state', async () => {
 		await render(BackfillPage, {
@@ -241,59 +234,5 @@ describe('backfill completion feedback', () => {
 		await expect
 			.element(page.getByTestId('backfill-action-success'))
 			.toHaveTextContent('last-db was marked as completed.');
-	});
-});
-
-describe('DB2 download link', () => {
-	it.each([
-		{ error: 'An earlier completion failed.' },
-		{ success: 'An earlier completion succeeded.' }
-	])('encodes the download link and replaces earlier completion feedback: %j', async (form) => {
-		const dbname = 'ø audit?#% &';
-		await render(BackfillPage, {
-			data: {
-				teamsWithTasks: [
-					{
-						naisteam: 'team-a',
-						tasksForTeam: [task('DB2', dbname, 'cold-storage-requested')]
-					}
-				],
-				error: null
-			},
-			form,
-			params: {}
-		});
-		await page.getByTestId('backfill-team-summary-team-a').click();
-		const download = page.getByTestId(`backfill-download-DB2-${dbname}`);
-		await expect
-			.element(download)
-			.toHaveAttribute('href', `/backfill/download?dbname=${encodeURIComponent(dbname)}`);
-		await expect.element(download).toHaveAttribute('target', '_blank');
-		await expect.element(download).toHaveAttribute('rel', 'noopener noreferrer');
-		await expect.element(download).toHaveAttribute('data-sveltekit-reload');
-		await expect.element(download).toHaveAttribute('data-sveltekit-preload-data', 'off');
-		download.element().addEventListener('click', (event) => event.preventDefault(), { once: true });
-
-		await download.click();
-
-		await expect
-			.element(page.getByTestId('backfill-download-notice'))
-			.toHaveTextContent(
-				`Download requested for ${dbname}. Your browser will manage the download. If the request fails, an error will appear in the new tab.`
-			);
-		await expect.element(page.getByTestId('backfill-action-error')).not.toBeInTheDocument();
-		await expect.element(page.getByTestId('backfill-action-success')).not.toBeInTheDocument();
-		await expect.element(page.getByTestId(`backfill-task-DB2-${dbname}`)).toBeVisible();
-		await expect.element(page.getByTestId(`backfill-complete-DB2-${dbname}`)).toBeEnabled();
-		expect(submissions).toHaveLength(0);
-		const cancel = vi.fn();
-		beforeNavigateMock.mock.calls[0][0]({ cancel });
-		expect(cancel).not.toHaveBeenCalled();
-
-		await page.getByTestId(`backfill-complete-DB2-${dbname}`).click();
-
-		await expect.element(page.getByTestId('backfill-download-notice')).not.toBeInTheDocument();
-		await expect.element(page.getByTestId('backfill-pending')).toBeVisible();
-		await finishSubmission();
 	});
 });
