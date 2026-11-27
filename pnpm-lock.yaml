@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@digdir/designsystemet-css':
-        specifier: ^1.24.0
-        version: 1.24.0
+        specifier: ^1.24.1
+        version: 1.24.1
       '@digdir/designsystemet-web':
         specifier: ^1.24.0
         version: 1.24.0
@@ -72,11 +72,14 @@ packages:
   '@blazediff/core@1.10.0':
     resolution: {integrity: sha512-AOQff0zgR7cGsZL+4E7hVkmujoPUpm0J9xzWGWZj5wCjd3gmxESXAPfKyuzs93VdpQNFhHlBhfOjrcZ+XTERtQ==}
 
-  '@digdir/designsystemet-css@1.24.0':
-    resolution: {integrity: sha512-nJu8GTb7FMyBbc9jkrpjU0AOzZNVEHYqYYyRSeAJ6gEcvh0aTCP6Ydx5FUtxJ7MHcn/22lL9mf1wibPz6Ag0AQ==}
+  '@digdir/designsystemet-css@1.24.1':
+    resolution: {integrity: sha512-xnLl55Vf1SE3x2zXXvh79CuF9iWhqnZn6MnVc5/Y+hGVSBW3WvA4CKQW3QHOycdNThcnZBhU9kjd4Ua99TU8sg==}
 
   '@digdir/designsystemet-types@1.24.0':
     resolution: {integrity: sha512-YHgjUG3zGIHjn/JcUrk7WE8vtKbneq1lZ+Fhl/5bBxppm3b/VXAQI0HCmk82J++LqwWyGhR9G3jgsyDeazNCgQ==}
+
+  '@digdir/designsystemet-types@1.24.1':
+    resolution: {integrity: sha512-DFeldU20YXuI5mlksw39yk+sbTqeVuVdnl1qxg3q17Y/rPxMcVfK+aYr6H8dnpBlsa1ikSweEWOtUe1O51bzKA==}
 
   '@digdir/designsystemet-web@1.24.0':
     resolution: {integrity: sha512-ITRejhwxhZFz1pVusa2HuzYt3RXoSdGu0G4qu5ICO2b9P/9zzk7skblte8FveBRBMx+MBVNK+XjzVnUJENjbyQ==}
@@ -794,11 +797,13 @@ snapshots:
 
   '@blazediff/core@1.10.0': {}
 
-  '@digdir/designsystemet-css@1.24.0':
+  '@digdir/designsystemet-css@1.24.1':
     dependencies:
-      '@digdir/designsystemet-types': 1.24.0
+      '@digdir/designsystemet-types': 1.24.1
 
   '@digdir/designsystemet-types@1.24.0': {}
+
+  '@digdir/designsystemet-types@1.24.1': {}
 
   '@digdir/designsystemet-web@1.24.0':
     dependencies:
